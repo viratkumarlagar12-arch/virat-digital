@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import sharp from 'sharp';
 import { SERVICE_SLUGS } from './routes';
 
 test.describe('hero', () => {
@@ -18,7 +19,7 @@ test.describe('hero', () => {
     }
   });
 
-  test('brand render sits behind the content, from a local AVIF/WebP asset, in the dark theme only', async ({ page }) => {
+  test('brand render sits behind the content, from a local AVIF/WebP asset, in both themes', async ({ page }) => {
     const visual = page.locator('[data-hero] .hero-visual');
     await page.emulateMedia({ colorScheme: 'dark' });
     await page.goto('/');
@@ -28,9 +29,18 @@ test.describe('hero', () => {
     await expect(page.locator('[data-hero] picture source[type="image/avif"]')).toHaveCount(1);
     await expect(visual).toHaveCSS('position', 'absolute');
     await expect.poll(() => visual.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+
+    // Light theme: the same render, never a dark block. The strip at the
+    // hero's right edge (no text there) must stay close to the page colour.
     await page.emulateMedia({ colorScheme: 'light' });
     await page.goto('/');
-    await expect(visual).toBeHidden();
+    await expect(visual).toBeVisible();
+    await expect.poll(() => visual.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    const hero = (await page.locator('[data-hero]').boundingBox())!;
+    const viewport = page.viewportSize()!;
+    const strip = await page.screenshot({ clip: { x: viewport.width * 0.92, y: hero.y + hero.height * 0.2, width: viewport.width * 0.08, height: hero.height * 0.5 } });
+    const { channels } = await sharp(strip).stats();
+    expect((channels[0].mean + channels[1].mean + channels[2].mean) / 3).toBeGreaterThan(170);
   });
 
   test('headline animation causes no layout shift', async ({ page }) => {

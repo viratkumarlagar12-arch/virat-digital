@@ -93,8 +93,14 @@ const services = await getServices();
         mask-image: linear-gradient(to right, transparent 35%, #000 70%), linear-gradient(to bottom, #000 55%, transparent 82%);
       }
     }
-    :root[data-theme="light"] .hero-visual { display: none; }
-    @media (prefers-color-scheme: light) { :root:not([data-theme]) .hero-visual { display: none; } }
+    /* Light theme: the same render, recoloured light. Inverting and turning
+       the hues back gives a pale stone V that keeps its amber light; the
+       slight brightening makes its background pure white, which multiply
+       drops into the page without an edge. */
+    :root[data-theme="light"] .hero-visual { filter: invert(1) hue-rotate(180deg) brightness(1.06); mix-blend-mode: multiply; }
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme]) .hero-visual { filter: invert(1) hue-rotate(180deg) brightness(1.06); mix-blend-mode: multiply; }
+    }
     /* Each size is the space available divided by the widest line's width
        in em (measured from the font), with a little room to spare. */
     .hero-title {
