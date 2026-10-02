@@ -1,13 +1,27 @@
 ---
+import { Picture } from 'astro:assets';
 import Icon from '../ui/Icon.astro';
 import { whatsappUrl } from '../../data/site';
 import { getServices } from '../../lib/content';
+import heroVisual from '../../assets/hero/virat-v-render.webp';
 
 const services = await getServices();
 
 ---
 
 <section class="hero" data-hero>
+  <!-- Brand render behind the content. It's positioned out of the layout
+       flow, so it takes no space and can't move the text. Dark theme only. -->
+  <Picture
+    class="hero-visual"
+    src={heroVisual}
+    alt="A sculpted dark letter V, the Virat Digital mark, among frosted glass panels and gold-rimmed shapes in low amber light."
+    formats={['avif', 'webp']}
+    widths={[640, 960, 1280, 1920, 2560]}
+    sizes="(min-width: 64em) 75vw, 100vw"
+    loading="eager"
+    decoding="async"
+  />
   <div class="container">
     <!-- Fixed line breaks so text never wraps on its own: the fallback font,
          Archivo arriving or the width animation can't move a word to another
@@ -49,6 +63,38 @@ const services = await getServices();
 <style>
   @layer sections {
     .hero { padding-block: clamp(2.5rem, 1rem + 5vw, 6rem) var(--section-y-sm); }
+
+    /* Brand render: behind the content and out of the flow. Lighten blending
+       drops anything darker than the page, so the picture has no visible
+       edge; the masks fade it out before the text. Shown in the dark theme
+       only, where it was made to sit. */
+    .hero { position: relative; isolation: isolate; overflow-x: clip; background: var(--bg); }
+    .hero-visual {
+      position: absolute; z-index: -1; top: 0; right: 0;
+      width: 100%; height: 26rem;
+      object-fit: cover; object-position: 96% 35%;
+      opacity: .4;
+      mix-blend-mode: lighten;
+      mask-image: linear-gradient(to right, transparent 25%, #000 75%), linear-gradient(to bottom, #000 35%, transparent 90%);
+      mask-composite: intersect;
+      pointer-events: none; user-select: none;
+    }
+    @media (min-width: 48em) {
+      .hero-visual {
+        width: 78%; height: 100%;
+        object-position: 100% 45%;
+        opacity: .8;
+        mask-image: linear-gradient(to right, transparent 35%, #000 70%), linear-gradient(to bottom, #000 45%, transparent 70%);
+      }
+    }
+    @media (min-width: 64em) {
+      .hero-visual {
+        opacity: .85;
+        mask-image: linear-gradient(to right, transparent 35%, #000 70%), linear-gradient(to bottom, #000 55%, transparent 82%);
+      }
+    }
+    :root[data-theme="light"] .hero-visual { display: none; }
+    @media (prefers-color-scheme: light) { :root:not([data-theme]) .hero-visual { display: none; } }
     /* Each size is the space available divided by the widest line's width
        in em (measured from the font), with a little room to spare. */
     .hero-title {

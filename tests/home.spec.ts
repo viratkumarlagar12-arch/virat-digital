@@ -18,6 +18,21 @@ test.describe('hero', () => {
     }
   });
 
+  test('brand render sits behind the content, from a local AVIF/WebP asset, in the dark theme only', async ({ page }) => {
+    const visual = page.locator('[data-hero] .hero-visual');
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto('/');
+    await expect(visual).toBeVisible();
+    await expect(visual).toHaveAttribute('alt', /letter V/);
+    await expect(visual).toHaveAttribute('src', /^\/_astro\//);
+    await expect(page.locator('[data-hero] picture source[type="image/avif"]')).toHaveCount(1);
+    await expect(visual).toHaveCSS('position', 'absolute');
+    await expect.poll(() => visual.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.goto('/');
+    await expect(visual).toBeHidden();
+  });
+
   test('headline animation causes no layout shift', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.setViewportSize({ width: 1280, height: 800 });
