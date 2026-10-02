@@ -3,26 +3,26 @@
 export const faq = [
   {
     q: 'How much does a project cost?',
-    a: "It depends on what's included, so every project gets a fixed quote after a short conversation. You'll know the full price before any work starts, and it only changes if the scope does.",
+    a: 'Every project gets a fixed quote after a short conversation. The price only changes if the scope does.',
   },
   {
     q: 'How long does a project take?',
-    a: 'A set of thumbnails or social posts can take days; a brand identity or a full website takes weeks. Your quote includes a timeline, agreed before anything starts.',
+    a: 'Days for thumbnails or social posts, weeks for a brand identity or website. Your quote sets the timeline.',
   },
   {
     q: 'How many revisions are included?',
-    a: '{revisions} rounds on design work, stated in your quote. If you need more, I’ll tell you what they would cost before doing them.',
+    a: '{revisions} rounds on design work. Extra rounds are priced before I start them.',
   },
   {
     q: 'Who owns the final work?',
-    a: 'You do. Once the project is paid for, the final files and the rights to use them are yours, including editable source files.',
+    a: 'You do. Once paid for, the final files, editable sources and usage rights are yours.',
   },
   {
     q: 'How do payments work?',
-    a: 'Payment terms, including any advance, are written into your quote, so you can see them before you agree to anything.',
+    a: 'Terms, including any advance, are in your quote, before you agree to anything.',
   },
   {
     q: 'What do you need from me to start?',
-    a: 'A short description of what you need, a few examples you like, and your timeline. If you already have logos, photos or text, send them too; if not, we’ll plan for them.',
+    a: 'What you need, a few examples you like, and your timeline. Send any logos, photos or text you already have.',
   },
 ];

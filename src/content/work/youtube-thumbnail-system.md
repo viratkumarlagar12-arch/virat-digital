@@ -2,7 +2,7 @@
 title: YouTube thumbnail system
 service: youtube-design
 status: concept
-summary: A modular thumbnail template designed to stay consistent and readable at the smallest sizes YouTube shows.
+summary: A modular template that stays consistent and readable at YouTube's smallest sizes.
 tools: [Photoshop, Canva]
 format: thumbnail
 word: Thumbnail

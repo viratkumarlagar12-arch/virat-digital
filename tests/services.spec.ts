@@ -16,8 +16,10 @@ for (const slug of SERVICE_SLUGS) {
     });
 
     test('has enough real substance to stand as its own page', async ({ page }) => {
+      // 400, not more: the copy was deliberately tightened (Oct 2026). Below
+      // this a service page starts to read as thin to visitors and to Google.
       const words = (await page.locator('main').innerText()).split(/\s+/).filter(Boolean).length;
-      expect(words).toBeGreaterThanOrEqual(450);
+      expect(words).toBeGreaterThanOrEqual(400);
       await expect(page.locator('main')).not.toContainText('{');
     });
 

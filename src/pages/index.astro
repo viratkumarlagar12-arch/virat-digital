@@ -22,7 +22,7 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, 3
     <div class="container">
       <div class="section-head section-head-split">
         <h2>Selected work</h2>
-        <p>Self-initiated and concept projects, each labelled for what it is. Client work joins as it ships.</p>
+        <p>Concept and self-initiated projects, clearly labelled. Client work joins as it ships.</p>
       </div>
       <WorkGrid projects={featured} />
       <p class="see-all"><a class="link-action" href="/work/">See all work</a></p>
@@ -33,7 +33,7 @@ const featured = (await getProjects()).filter((p) => p.data.featured).slice(0, 3
     <div class="container">
       <div class="section-head section-head-split">
         <h2>Services</h2>
-        <p>Five ways I can help. Each one has its own page with what’s included and how it works.</p>
+        <p>Five services, each with full details on its own page.</p>
       </div>
       <ServiceRows />
     </div>

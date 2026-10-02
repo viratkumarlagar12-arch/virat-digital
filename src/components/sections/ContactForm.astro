@@ -34,7 +34,7 @@ const services = await getServices();
 
   <fieldset class="field field-group" aria-describedby="cf-reply-help cf-reply-error">
     <legend class="field-legend">How should I reply?</legend>
-    <p class="field-help" id="cf-reply-help">An email address or a WhatsApp number. One is enough.</p>
+    <p class="field-help" id="cf-reply-help">Email or WhatsApp. One is enough.</p>
     <div class="field-row">
       <div class="field">
         <label for="cf-email">Email</label>
@@ -74,7 +74,7 @@ const services = await getServices();
   </div>
 
   <button class="btn btn-primary btn-lg btn-block" type="submit">Send project details</button>
-  <p class="t-caption">I’ll only use these details to reply to you. <a href="/privacy/">Privacy</a></p>
+  <p class="t-caption">Used only to reply to you. <a href="/privacy/">Privacy</a></p>
   <p class="form-status" role="status"></p>
 </form>
 
@@ -187,7 +187,7 @@ const services = await getServices();
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
         link.textContent = 'send them on WhatsApp';
-        status.append('That didn’t send. Your details are still here: try again, or ', link, ' instead.');
+        status.append('That didn’t send. Your details are kept: try again, or ', link, '.');
       } finally {
         submit.disabled = false;
         submit.textContent = 'Send project details';

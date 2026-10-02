@@ -26,7 +26,7 @@ const toolGroups = (await getServices())
 >
   <PageHero
     title="A one-person studio for design, websites and automation"
-    lead={`Virat Digital is independent and founder-led.${site.founderName ? ` I’m ${site.founderName}.` : ''} I handle the design, development and strategy myself, so you always talk to the person doing the work.`}
+    lead={`Virat Digital is independent and founder-led.${site.founderName ? ` I’m ${site.founderName}.` : ''} I do the design, development and strategy myself.`}
   />
 
   <section class="section-sm">
@@ -36,17 +36,13 @@ const toolGroups = (await getServices())
       </div>
       <div class="prose">
         <p>
-          Virat Digital is built around one idea: design, websites, automation and marketing work best when
-          they’re planned together, not bought as four separate jobs from four different people.
+          Design, websites, automation and marketing work best planned together, not bought as four jobs from
+          four people.
         </p>
         <p>
-          A logo has to work as a YouTube profile picture. A website has to bring in enquiries, and those
-          enquiries have to be answered quickly. A marketing plan only works if the brand and the site behind
-          it are ready. When one person plans all of it, the pieces fit, and nothing gets lost in a hand-off.
-        </p>
-        <p>
-          It also means you’re never passed along. The person you message on WhatsApp is the person who
-          designs, builds and delivers your project.
+          A logo has to work as a profile picture. A website has to bring in enquiries that get answered fast.
+          Marketing only works if the brand and site behind it are ready. When one person plans it all, the
+          pieces fit.
         </p>
       </div>
     </div>
@@ -58,7 +54,7 @@ const toolGroups = (await getServices())
     <div class="container split">
       <div class="section-head">
         <h2>Tools I use</h2>
-        <p>Chosen for each job, not out of habit. These are the tools behind the work on this site.</p>
+        <p>The tools behind the work on this site.</p>
       </div>
       <ul class="tool-groups">
         {toolGroups.map((g) => (
@@ -78,8 +74,7 @@ const toolGroups = (await getServices())
       </div>
       <div class="stack">
         <p class="t-lead">
-          I also run the YouTube channel {youtube.handle}, so the thumbnail and channel work I offer is
-          something I do for myself too.
+          I run {youtube.handle}, so I design thumbnails and channel art for myself too.
         </p>
         <p><a class="btn btn-outline" href={youtube.url} target="_blank" rel="noopener noreferrer">Visit {youtube.handle}</a></p>
       </div>

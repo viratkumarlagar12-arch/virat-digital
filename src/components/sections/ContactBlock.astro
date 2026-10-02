@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { title, service, flush = false, whatsappText = "Hi Virat Digital, I'd like to talk about a project." } = Astro.props;
-const lead = Astro.props.lead ?? (title ? `Share a few details and I’ll reply personally within ${commitments.replyHours} hours, with next steps or a few questions.` : undefined);
+const lead = Astro.props.lead ?? (title ? `I reply personally within ${commitments.replyHours} hours.` : undefined);
 const hasHead = Boolean(title || lead);
 
 const channels: { icon: IconName; label: string; value: string; href: string; external?: boolean }[] = [
@@ -34,7 +34,7 @@ const channels: { icon: IconName; label: string; value: string; href: string; ex
     <ContactForm service={service} />
 
     <div class="contact-channels">
-      <p class="contact-channels-intro">Prefer to talk first? Message me on WhatsApp, or use any of these.</p>
+      <p class="contact-channels-intro">Prefer to talk first? Message me directly.</p>
       <ul class="contact-list" aria-label="Other ways to reach me">
         {channels.map((c) => (
           <li>

@@ -2,7 +2,7 @@
 title: Brand identity concept
 service: graphic-design
 status: concept
-summary: A concept identity system for a modern brand, covering logo, colour and visual language.
+summary: Logo, colour and visual language for a modern brand.
 tools: [Figma, Illustrator]
 format: square
 word: Brand

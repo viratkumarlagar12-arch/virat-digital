@@ -2,7 +2,7 @@
 title: YouTube banner concept
 service: youtube-design
 status: concept
-summary: A channel banner designed to stay clean and legible in the TV, desktop and mobile crops.
+summary: Stays clean and legible in TV, desktop and mobile crops.
 tools: [Photoshop, Figma]
 format: banner
 word: Banner
