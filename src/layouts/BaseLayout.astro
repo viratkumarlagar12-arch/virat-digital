@@ -6,6 +6,7 @@ import Seo from '../components/global/Seo.astro';
 import Header from '../components/global/Header.astro';
 import Footer from '../components/global/Footer.astro';
 import WhatsAppSticky from '../components/global/WhatsAppSticky.astro';
+import JsonLd from '../components/global/JsonLd.astro';
 
 interface Props {
   title: string;
@@ -14,9 +15,11 @@ interface Props {
   noindex?: boolean;
   type?: 'website' | 'article';
   whatsappText?: string;  // prefilled message for the sticky WhatsApp button
+  schema?: Record<string, unknown>[];           // page-specific structured data
+  crumbs?: { name: string; path: string }[];  // breadcrumb trail after Home, ending with this page
 }
 
-const { title, description, image, noindex, type, whatsappText } = Astro.props;
+const { title, description, image, noindex, type, whatsappText, schema, crumbs } = Astro.props;
 ---
 
 <!doctype html>
@@ -25,6 +28,7 @@ const { title, description, image, noindex, type, whatsappText } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <Seo title={title} description={description} image={image} noindex={noindex} type={type} />
+    {!noindex && <JsonLd nodes={schema} crumbs={crumbs} />}
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#0e0f28" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f5f5f9" media="(prefers-color-scheme: light)" />

@@ -10,5 +10,7 @@ const site = process.env.SITE_URL || undefined;
 export default defineConfig({
   site,
   trailingSlash: 'always',
-  integrations: site ? [sitemap({ filter: (page) => !page.includes('/styleguide/') })] : [],
+  integrations: site
+    ? [sitemap({ filter: (page) => !['/styleguide/', '/thanks/', '/404', '/og/'].some((path) => page.includes(path)) })]
+    : [],
 });

@@ -22,9 +22,18 @@ const { service } = Astro.props;
 const { data } = service;
 const { Content } = await render(service);
 const related = (await getProjects()).filter((p) => p.data.service.id === service.id);
+const path = `/services/${service.id}/`;
+const schema = [{
+  '@type': 'Service',
+  name: data.title,
+  description: data.metaDescription,
+  serviceType: data.includes.join(', '),
+  url: Astro.site ? new URL(path, Astro.site).href : path,
+  provider: { '@id': Astro.site ? new URL('/#business', Astro.site).href : '#business' },
+}];
 ---
 
-<BaseLayout title={data.metaTitle} description={data.metaDescription} whatsappText={data.whatsappText}>
+<BaseLayout title={data.metaTitle} description={data.metaDescription} whatsappText={data.whatsappText} schema={schema} crumbs={[{ name: 'Services', path: '/services/' }, { name: data.title, path }]}>
   <PageHero title={data.headline} lead={data.lead} crumbs={[{ label: 'Services', href: '/services/' }]}>
     <div class="cluster">
       <a class="btn btn-primary btn-lg" href="#contact">{data.cta}</a>

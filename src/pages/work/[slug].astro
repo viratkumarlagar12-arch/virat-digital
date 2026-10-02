@@ -18,9 +18,19 @@ const { project } = Astro.props;
 const { data } = project;
 const { Content } = await render(project);
 const service = (await getServices()).find((s) => s.id === data.service.id)!;
+const path = `/work/${project.id}/`;
+const abs = (p: string) => (Astro.site ? new URL(p, Astro.site).href : p);
+const schema = [{
+  '@type': 'CreativeWork',
+  name: data.title,
+  description: data.summary,
+  url: abs(path),
+  creator: { '@id': abs('/#business') },
+  ...(data.cover ? { image: abs(data.cover.src) } : {}),
+}];
 ---
 
-<BaseLayout title={`${data.title} | Virat Digital`} description={data.summary} type="article">
+<BaseLayout title={`${data.title} | Virat Digital`} description={data.summary} type="article" schema={schema} crumbs={[{ name: 'Work', path: '/work/' }, { name: data.title, path }]}>
   <PageHero title={data.title} lead={data.summary} crumbs={[{ label: 'Work', href: '/work/' }]}>
     <ul class="project-meta">
       <li><span class="badge">{statusLabel[data.status]}</span></li>

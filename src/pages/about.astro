@@ -20,6 +20,7 @@ const toolGroups = (await getServices())
 ---
 
 <BaseLayout
+  crumbs={[{ name: 'About', path: '/about/' }]}
   title="About | Virat Digital"
   description="Virat Digital is an independent, one-person studio for design, websites, AI automation and digital marketing. You work directly with the person doing the work."
 >
@@ -77,8 +78,8 @@ const toolGroups = (await getServices())
       </div>
       <div class="stack">
         <p class="t-lead">
-          I also run the channel {youtube.handle}. It’s where I put into practice what I recommend to clients:
-          thumbnails, channel branding and a steady publishing rhythm.
+          I also run the YouTube channel {youtube.handle}, so the thumbnail and channel work I offer is
+          something I do for myself too.
         </p>
         <p><a class="btn btn-outline" href={youtube.url} target="_blank" rel="noopener noreferrer">Visit {youtube.handle}</a></p>
       </div>

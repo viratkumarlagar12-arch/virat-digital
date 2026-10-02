@@ -1,0 +1,36 @@
+---
+import { site } from '../../data/site';
+
+// Structured data: the business on every page, plus whatever the page adds
+// (a Service, a CreativeWork) and its breadcrumb trail. Absolute URLs need
+// the real domain, so nothing is emitted until SITE_URL is set.
+interface Props {
+  nodes?: Record<string, unknown>[];
+  crumbs?: { name: string; path: string }[];  // ancestors and the page itself, without Home
+}
+
+const { nodes = [], crumbs } = Astro.props;
+const base = Astro.site;
+const abs = (path: string) => (base ? new URL(path, base).href : path);
+
+const business = {
+  '@type': 'Organization',
+  '@id': abs('/#business'),
+  name: site.name,
+  url: abs('/'),
+  description: site.description,
+  email: site.email,
+  telephone: `+${site.whatsapp.number}`,
+  logo: abs('/og/home.png'),
+  sameAs: site.socials.map((s) => s.url),
+};
+
+const breadcrumb = crumbs && {
+  '@type': 'BreadcrumbList',
+  itemListElement: [{ name: 'Home', path: '/' }, ...crumbs].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: abs(c.path) })),
+};
+
+const graph = { '@context': 'https://schema.org', '@graph': [business, ...nodes, ...(breadcrumb ? [breadcrumb] : [])] };
+---
+
+{base && <script type="application/ld+json" set:html={JSON.stringify(graph)} />}
