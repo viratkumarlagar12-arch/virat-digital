@@ -89,8 +89,8 @@ Open `/styleguide/` on the running site (it isn't linked or indexed). It shows e
 with its contrast ratio in both themes, the type scale, buttons, media frames and form fields,
 rendered with the real code.
 
-- **Tokens** (`src/styles/tokens.css`) come in three layers: primitives (`--ink-*`,
-  `--marigold-*`), semantic roles (`--bg`, `--text`, `--accent`…) defined once each with
+- **Tokens** (`src/styles/tokens.css`) come in three layers: primitives (`--onyx-*` for the
+  dark theme, `--ink-*` for the light theme, `--marigold-*`), semantic roles (`--bg`, `--text`, `--accent`…) defined once each with
   `light-dark()`, and component-level props inside `components.css`. Components use semantic
   tokens only, never raw colours.
 - **Cascade layers**: `tokens`, `base`, `components`, `sections`. Later layers win, so page

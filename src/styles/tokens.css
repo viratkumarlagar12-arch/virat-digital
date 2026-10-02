@@ -1,7 +1,8 @@
 /* =========================================================
    Virat Digital — design tokens (src/styles/tokens.css)
 
-   Direction: "Ink & Marigold". Deep indigo ink, one marigold accent, and
+   Direction: "Ink & Marigold". Near-black onyx in the dark theme, indigo
+   ink in the light theme, one marigold accent, and
    Archivo's width axis as the brand voice: headlines run expanded
    ("Virat" means immense), body text runs at normal width.
 
@@ -64,6 +65,18 @@
     --ink-50:  #f5f5f9;
     --ink-25:  #fafbfd;
     --white:   #ffffff;
+
+    /* ---- 1. Primitives: onyx (neutral near-black), the dark theme's
+       palette. The light theme uses ink. ---- */
+    --onyx-950: #0b0b0f;  /* background */
+    --onyx-925: #0f1014;  /* alternate sections, form fields */
+    --onyx-900: #121319;  /* surfaces, cards */
+    --onyx-875: #181920;  /* surface hover */
+    --onyx-500: #7c7e86;  /* control borders, 3:1+ */
+    --onyx-400: #8e9098;  /* subtle text */
+    --onyx-300: #b8bac2;  /* secondary text */
+    --onyx-200: #deded9;  /* inverse surface hover */
+    --onyx-50:  #f5f5f2;  /* primary text */
 
     /* ---- 1. Primitives: true neutrals, only behind work images ---- */
     --neutral-850: #1d1e24;
@@ -189,21 +202,21 @@
 
     /* ---- 2. Semantic: light-dark(light value, dark value) ---- */
     color-scheme: dark light;
-    --bg:                    light-dark(var(--ink-50),  var(--ink-950));
-    --bg-alt:                light-dark(var(--ink-100), var(--ink-925));
-    --surface:               light-dark(var(--white),   var(--ink-900));
-    --surface-hover:         light-dark(var(--ink-25),  var(--ink-875));
-    --surface-inverse:       light-dark(var(--ink-950), var(--ink-50));
-    --surface-inverse-hover: light-dark(var(--ink-800), var(--ink-200));
+    --bg:                    light-dark(var(--ink-50),  var(--onyx-950));
+    --bg-alt:                light-dark(var(--ink-100), var(--onyx-925));
+    --surface:               light-dark(var(--white),   var(--onyx-900));
+    --surface-hover:         light-dark(var(--ink-25),  var(--onyx-875));
+    --surface-inverse:       light-dark(var(--ink-950), var(--onyx-50));
+    --surface-inverse-hover: light-dark(var(--ink-800), var(--onyx-200));
     --frame-bg:              light-dark(var(--neutral-100), var(--neutral-850));
-    --text:          light-dark(var(--ink-950), var(--ink-50));
-    --text-muted:    light-dark(var(--ink-700), var(--ink-300));
-    --text-subtle:   light-dark(var(--ink-600), var(--ink-400));
-    --text-inverse:  light-dark(var(--ink-50),  var(--ink-950));
-    --line:          light-dark(rgb(14 15 40 / .10), rgb(245 245 249 / .10));
-    --line-strong:   light-dark(rgb(14 15 40 / .20), rgb(245 245 249 / .20));
-    --line-control:  var(--ink-500);       /* input/outline-button borders, 3:1+ */
-    --field-bg:      light-dark(var(--white), var(--ink-925));
+    --text:          light-dark(var(--ink-950), var(--onyx-50));
+    --text-muted:    light-dark(var(--ink-700), var(--onyx-300));
+    --text-subtle:   light-dark(var(--ink-600), var(--onyx-400));
+    --text-inverse:  light-dark(var(--ink-50),  var(--onyx-950));
+    --line:          light-dark(rgb(14 15 40 / .10), rgb(255 255 255 / .10));
+    --line-strong:   light-dark(rgb(14 15 40 / .20), rgb(255 255 255 / .20));
+    --line-control:  light-dark(var(--ink-500), var(--onyx-500)); /* input/outline-button borders, 3:1+ */
+    --field-bg:      light-dark(var(--white), var(--onyx-925));
     --accent:         var(--marigold-500); /* fills only: buttons, active marks */
     --accent-hover:   light-dark(var(--marigold-600), var(--marigold-400));
     --accent-pressed: light-dark(var(--marigold-700), var(--marigold-600));
@@ -215,13 +228,13 @@
     --danger:         light-dark(var(--red-700), var(--red-400));
     --danger-surface: light-dark(var(--red-50), rgb(244 123 116 / .12));
     --success:        light-dark(var(--green-700), var(--green-400));
-    --header-bg:      light-dark(rgb(245 245 249 / .88), rgb(14 15 40 / .86));
-    --scrim:          light-dark(rgb(14 15 40 / .35), rgb(5 6 20 / .6));
+    --header-bg:      light-dark(rgb(245 245 249 / .88), rgb(11 11 15 / .86));
+    --scrim:          light-dark(rgb(14 15 40 / .35), rgb(0 0 0 / .6));
 
     /* Shadows: one recipe, colours switch per theme */
     --shadow-rim:  light-dark(transparent, rgb(255 255 255 / .05));
-    --shadow-soft: light-dark(rgb(14 15 40 / .05), rgb(4 4 16 / .5));
-    --shadow-deep: light-dark(rgb(14 15 40 / .22), rgb(4 4 16 / .8));
+    --shadow-soft: light-dark(rgb(14 15 40 / .05), rgb(0 0 0 / .5));
+    --shadow-deep: light-dark(rgb(14 15 40 / .22), rgb(0 0 0 / .8));
     --shadow-1: inset 0 1px 0 var(--shadow-rim), 0 1px 2px var(--shadow-soft);
     --shadow-2: inset 0 1px 0 var(--shadow-rim), 0 2px 4px var(--shadow-soft), 0 18px 40px -18px var(--shadow-deep);
     --shadow-3: 0 4px 8px var(--shadow-soft), 0 28px 72px -24px var(--shadow-deep);
@@ -235,21 +248,22 @@
   @supports not (color: light-dark(#000, #fff)) {
     :root, :root[data-theme] {
       color-scheme: dark;
-      --bg: var(--ink-950);            --bg-alt: var(--ink-925);
-      --surface: var(--ink-900);       --surface-hover: var(--ink-875);
-      --surface-inverse: var(--ink-50); --surface-inverse-hover: var(--ink-200);
+      --bg: var(--onyx-950);           --bg-alt: var(--onyx-925);
+      --surface: var(--onyx-900);      --surface-hover: var(--onyx-875);
+      --surface-inverse: var(--onyx-50); --surface-inverse-hover: var(--onyx-200);
       --frame-bg: var(--neutral-850);
-      --text: var(--ink-50);           --text-muted: var(--ink-300);
-      --text-subtle: var(--ink-400);   --text-inverse: var(--ink-950);
-      --line: rgb(245 245 249 / .10);  --line-strong: rgb(245 245 249 / .20);
-      --field-bg: var(--ink-925);
+      --text: var(--onyx-50);          --text-muted: var(--onyx-300);
+      --text-subtle: var(--onyx-400);  --text-inverse: var(--onyx-950);
+      --line: rgb(255 255 255 / .10);  --line-strong: rgb(255 255 255 / .20);
+      --line-control: var(--onyx-500);
+      --field-bg: var(--onyx-925);
       --accent-hover: var(--marigold-400); --accent-pressed: var(--marigold-600);
       --accent-text: var(--marigold-400);  --accent-surface: rgb(245 165 9 / .12);
       --link-underline: var(--marigold-500); --focus-ring: var(--marigold-400);
       --danger: var(--red-400);        --danger-surface: rgb(244 123 116 / .12);
       --success: var(--green-400);
-      --header-bg: rgb(14 15 40 / .86); --scrim: rgb(5 6 20 / .6);
-      --shadow-rim: rgb(255 255 255 / .05); --shadow-soft: rgb(4 4 16 / .5); --shadow-deep: rgb(4 4 16 / .8);
+      --header-bg: rgb(11 11 15 / .86); --scrim: rgb(0 0 0 / .6);
+      --shadow-rim: rgb(255 255 255 / .05); --shadow-soft: rgb(0 0 0 / .5); --shadow-deep: rgb(0 0 0 / .8);
     }
   }
 

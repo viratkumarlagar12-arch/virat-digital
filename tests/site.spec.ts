@@ -61,7 +61,7 @@ test.describe('theme', () => {
     await page.emulateMedia({ colorScheme: 'dark' });
     await page.goto('/');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(14, 15, 40)');
+    await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(11, 11, 15)');
   });
 
   test('toggle switches theme and the choice survives a reload', async ({ page }) => {
