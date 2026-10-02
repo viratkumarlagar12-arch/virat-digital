@@ -54,19 +54,28 @@ section stays hidden while that list is empty.
 
 ## Deploying to Netlify
 
-1. Connect the repository to Netlify. It detects Astro: build command `npm run build`,
-   publish directory `dist`.
+`netlify.toml` holds the build settings (build command `npm run build`, publish directory
+`dist`, Node 24) and the response headers, so nothing needs configuring in Netlify's build
+settings.
+
+1. Connect the repository to Netlify.
 2. **Turn on form detection** (Site configuration → Forms). Without it, contact form
    submissions go nowhere. Then set up email notifications for the `contact` form.
-3. Once you have a domain, add an environment variable `SITE_URL` (for example
-   `https://www.yourdomain.com`) and redeploy. That switches on canonical URLs, link-preview
-   images, structured data, the sitemap and the sitemap line in `robots.txt`. Until it's set,
-   they're left out rather than pointing at a made-up address.
+3. Canonical URLs, link-preview images, structured data, the sitemap and the sitemap line in
+   `robots.txt` use the site's Netlify address (`https://<name>.netlify.app`) automatically.
+   After you connect a domain, trigger a redeploy (Deploys → Trigger deploy) so they move to
+   it. To use a different address, set an environment variable `SITE_URL` (for example
+   `https://www.yourdomain.com`); it always wins. Outside Netlify, without `SITE_URL`, they're
+   left out rather than pointing at a made-up address.
 4. After launch, add the site to Google Search Console and submit `/sitemap-index.xml`.
 
 The form posts to Netlify Forms in the background and shows "Project details sent" or, if
 sending fails, a WhatsApp link with the visitor's message filled in. Without JavaScript it posts
 normally and lands on `/thanks/`. A hidden field (`bot-field`) catches spam bots.
+
+The form only sends on the deployed site. On `npm run dev` it says that nothing was sent. To
+check it end to end, send it once on the deployed site and look for the entry under Forms in
+Netlify, and for the notification email.
 
 ## Honesty rules
 
@@ -100,7 +109,7 @@ rendered with the real code.
 - navigation, the services menu, the mobile menu and the no-JavaScript fallbacks
 - the contact form: validation, sending, failure with WhatsApp fallback, service preselection
 - the hero doesn't shift the page as the font loads or the headline widens
-- structured data, preview images, sitemap and `robots.txt`
+- structured data, preview images, sitemap and `robots.txt`, and which site address they use
 
 `CROSS=1 npm test` adds Firefox and WebKit (Safari's engine); run
 `npx playwright install firefox webkit` once first.
@@ -116,8 +125,8 @@ These are written with defaults or left out until you choose:
 - **Your name and photo**: the About page reads fine without them. Set `founderName` in
   `src/data/site.ts`.
 - **Process durations**: the process steps don't give timeframes yet.
-- **Domain and email**: needed for `SITE_URL`; an address on your own domain also reads as more
-  established than a Gmail one.
+- **Domain and email**: the site works on its Netlify address until you connect a domain; an
+  email address on your own domain also reads as more established than a Gmail one.
 - **Privacy page**: written to describe what the site actually does. Have it checked before
   launch, and update it if you add analytics.
 - **The line "Client projects are under way"** on the Work page, carried over from the

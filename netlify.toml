@@ -1,0 +1,22 @@
+# Netlify build settings. Form detection can't be set here: turn it on in the
+# Netlify UI (Site configuration → Forms), or the contact form receives nothing.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Astro needs Node 22.12 or newer; 24 is what the site is built and tested on.
+  NODE_VERSION = "24"
+
+# Files in /_astro/ have a content hash in their name, so they never change.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"

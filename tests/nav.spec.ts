@@ -63,6 +63,17 @@ test.describe('mobile menu', () => {
     await page.getByRole('button', { name: 'Open menu' }).click();
     await expect(page.locator('html')).toHaveCSS('overflow-y', 'hidden');
   });
+
+  test('the theme can be switched while it is open, and the menu stays open', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Open menu' }).click();
+    await page.getByRole('button', { name: 'Switch to light theme' }).click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(245, 245, 249)');
+    await expect(page.getByRole('button', { name: 'Close menu' })).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Websites' })).toBeVisible();
+  });
 });
 
 test.describe('WhatsApp links', () => {

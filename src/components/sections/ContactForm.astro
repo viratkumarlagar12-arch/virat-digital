@@ -164,6 +164,13 @@ const services = await getServices();
         return;
       }
 
+      // The dev server answers any POST with the page itself, so a send would
+      // look successful. Only the deployed site (Netlify Forms) receives it.
+      if (import.meta.env.DEV) {
+        status.textContent = 'Not sent: this is the local development server. The form sends once the site is on Netlify.';
+        return;
+      }
+
       submit.disabled = true;
       submit.textContent = 'Sending…';
       try {
