@@ -1,0 +1,63 @@
+---
+import { fill } from '../../lib/content';
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+
+const steps = [
+  { title: 'Discover', text: 'We talk through what you need, on a call or on WhatsApp.', receive: 'A short written summary of the brief, so we agree on what’s being made.' },
+  { title: 'Plan', text: 'I scope the work and price it.', receive: 'A fixed quote with the price, timeline and deliverables. Nothing starts until you approve it.' },
+  { title: 'Create', text: 'I design and build, sharing progress at each milestone.', receive: 'Drafts to review, with {revisions} rounds of revisions.' },
+  { title: 'Deliver', text: 'Final checks across devices and formats, then handover.', receive: 'Every final file, including editable sources, and help getting it live.' },
+];
+---
+
+<section class:list={['section', className]}>
+  <div class="container split split-sticky">
+    <div class="section-head">
+      <h2>How a project works</h2>
+      <p>Four steps, the same for every project, so you always know what happens next.</p>
+    </div>
+
+    <ol class="steps" data-steps>
+      {steps.map((step, i) => (
+        <li class="step">
+          <span class="step-marker" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+          <p class="step-receive"><strong>You get:</strong> {fill(step.receive)}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .step-receive { margin-top: var(--space-3); padding: var(--space-3) var(--space-4); border-left: 2px solid var(--line-strong); font-size: var(--text-sm); line-height: 1.5; }
+    .step-receive strong { color: var(--text); font-weight: var(--weight-semibold); }
+  }
+</style>
+
+<script>
+  // The rail fills and steps light up as the visitor scrolls past them.
+  document.querySelectorAll<HTMLElement>('[data-steps]').forEach((steps) => {
+    const items = Array.from(steps.querySelectorAll<HTMLElement>('.step'));
+    let ticking = false;
+    const update = () => {
+      const line = window.innerHeight * 0.55;
+      const rect = steps.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, (line - rect.top) / rect.height));
+      steps.style.setProperty('--steps-progress', progress.toFixed(3));
+      items.forEach((step) => step.classList.toggle('is-active', step.getBoundingClientRect().top < line));
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
+</script>

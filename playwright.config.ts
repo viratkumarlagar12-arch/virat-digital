@@ -5,6 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
+  workers: 3,
   reporter: [['list']],
   use: {
     baseURL: 'http://localhost:4321',

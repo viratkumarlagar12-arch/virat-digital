@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/sections/PageHero.astro';
+import { commitments } from '../data/site';
+---
+
+<!-- Where the contact form lands when it's sent without JavaScript. -->
+<BaseLayout
+  title="Project details sent | Virat Digital"
+  description="Your project details reached Virat Digital. You'll get a personal reply with next steps or a few questions."
+  noindex
+>
+  <PageHero title="Project details sent" lead={`Thanks. I’ll reply within ${commitments.replyHours} hours, with next steps or a few questions.`}>
+    <div class="cluster">
+      <a class="btn btn-primary btn-lg" href="/work/">See my work while you wait</a>
+      <a class="btn btn-outline btn-lg" href="/">Back to the home page</a>
+    </div>
+  </PageHero>
+</BaseLayout>

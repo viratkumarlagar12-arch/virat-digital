@@ -1,0 +1,191 @@
+---
+import { getServices } from '../../lib/content';
+import { commitments } from '../../data/site';
+
+interface Props {
+  service?: string; // slug to preselect
+}
+const { service } = Astro.props;
+const services = await getServices();
+---
+
+<!-- Netlify Forms reads this static form at deploy time. With JavaScript the
+     form posts in the background and shows the result here; without it, the
+     browser posts normally and lands on /thanks/. -->
+<form
+  class="contact-form"
+  name="contact"
+  method="POST"
+  action="/thanks/"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  novalidate
+  data-reply-hours={commitments.replyHours}
+>
+  <input type="hidden" name="form-name" value="contact" />
+  <p hidden><label>Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+
+  <div class="field">
+    <label for="cf-name">Name</label>
+    <input type="text" id="cf-name" name="name" required autocomplete="name" aria-describedby="cf-name-error" />
+    <p class="field-error" id="cf-name-error"></p>
+  </div>
+
+  <fieldset class="field field-group" aria-describedby="cf-reply-help cf-reply-error">
+    <legend class="field-legend">How should I reply?</legend>
+    <p class="field-help" id="cf-reply-help">An email address or a WhatsApp number. One is enough.</p>
+    <div class="field-row">
+      <div class="field">
+        <label for="cf-email">Email</label>
+        <input type="email" id="cf-email" name="email" autocomplete="email" inputmode="email" aria-describedby="cf-reply-error" />
+      </div>
+      <div class="field">
+        <label for="cf-whatsapp">WhatsApp</label>
+        <input type="tel" id="cf-whatsapp" name="whatsapp" autocomplete="tel" inputmode="tel" placeholder="+91 98765 43210" aria-describedby="cf-reply-error" />
+      </div>
+    </div>
+    <p class="field-error" id="cf-reply-error"></p>
+  </fieldset>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="cf-service">Service</label>
+      <select id="cf-service" name="service">
+        {services.map((s) => <option value={s.id} selected={s.id === service}>{s.data.title}</option>)}
+        <option value="other" selected={!service}>Not sure yet / something else</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="cf-timeline">Timeline <span class="field-optional">(optional)</span></label>
+      <select id="cf-timeline" name="timeline">
+        <option value="">Not sure yet</option>
+        <option>As soon as possible</option>
+        <option>Within a month</option>
+        <option>In 1–3 months</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="cf-message">Project details</label>
+    <textarea id="cf-message" name="message" rows="5" required placeholder="What are you making, improving or automating?" aria-describedby="cf-message-error"></textarea>
+    <p class="field-error" id="cf-message-error"></p>
+  </div>
+
+  <button class="btn btn-primary btn-lg btn-block" type="submit">Send project details</button>
+  <p class="t-caption">I’ll only use these details to reply to you. <a href="/privacy/">Privacy</a></p>
+  <p class="form-status" role="status"></p>
+</form>
+
+<style>
+  @layer sections {
+    .contact-form {
+      display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5);
+      padding: clamp(var(--space-6), 3vw, var(--space-10));
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-panel);
+      box-shadow: var(--shadow-2);
+    }
+    .field-group { margin: 0; padding: 0; border: 0; min-width: 0; }
+    .field-group .field-legend { padding: 0; margin-bottom: var(--space-1); }
+    .field-group .field-row { margin-top: var(--space-2); }
+    .field-group .field label { font-weight: var(--weight-regular); color: var(--text-muted); }
+    .form-status { min-height: 1.5rem; color: var(--text); font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+    .form-status:empty { min-height: 0; }
+    .form-status[data-state="error"] { color: var(--danger); }
+    .form-status a { color: var(--text); }
+  }
+</style>
+
+<script>
+  const WHATSAPP = '918210618353';
+
+  document.querySelectorAll<HTMLFormElement>('form[name="contact"]').forEach((form) => {
+    const status = form.querySelector<HTMLElement>('.form-status')!;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const el = (name: string) => form.elements.namedItem(name) as HTMLInputElement;
+    const replyHours = form.dataset.replyHours;
+
+    // /contact/?service=websites preselects that service.
+    const fromUrl = new URLSearchParams(location.search).get('service');
+    const select = el('service') as unknown as HTMLSelectElement;
+    if (fromUrl && Array.from(select.options).some((o) => o.value === fromUrl)) select.value = fromUrl;
+
+    function setError(inputs: HTMLInputElement[], slotId: string, message: string) {
+      inputs.forEach((input) => {
+        input.closest('.field')?.classList.toggle('has-error', Boolean(message));
+        if (message) input.setAttribute('aria-invalid', 'true');
+        else input.removeAttribute('aria-invalid');
+      });
+      const slot = document.getElementById(slotId);
+      if (slot) slot.textContent = message;
+      return !message;
+    }
+
+    function validate() {
+      const name = el('name');
+      const email = el('email');
+      const whatsapp = el('whatsapp');
+      const message = el('message');
+      const emailValue = email.value.trim();
+      const hasWhatsapp = whatsapp.value.replace(/\D/g, '').length >= 7;
+
+      let ok = setError([name], 'cf-name-error', name.value.trim() ? '' : 'Please enter your name.');
+      let replyError = '';
+      let replyInputs = [email, whatsapp];
+      if (!emailValue && !hasWhatsapp) replyError = 'Add an email address or a WhatsApp number so I can reply.';
+      else if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailValue)) {
+        replyError = 'That email address looks incomplete.';
+        replyInputs = [email];
+      }
+      setError([email, whatsapp], 'cf-reply-error', '');
+      if (replyError) ok = setError(replyInputs, 'cf-reply-error', replyError) && ok;
+      ok = setError([message], 'cf-message-error', message.value.trim().length >= 10 ? '' : 'Tell me a little more (10 or more characters).') && ok;
+      return ok;
+    }
+
+    function whatsappLink() {
+      const text = `Hi Virat Digital, I'm ${el('name').value.trim()}. ${el('message').value.trim()}`;
+      return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '';
+      delete status.dataset.state;
+
+      if (!validate()) {
+        form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+        return;
+      }
+
+      submit.disabled = true;
+      submit.textContent = 'Sending…';
+      try {
+        const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString();
+        const response = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+        if (!response.ok) throw new Error(String(response.status));
+        form.reset();
+        status.textContent = `Project details sent. I’ll reply within ${replyHours} hours.`;
+      } catch {
+        status.dataset.state = 'error';
+        status.innerHTML = '';
+        const link = document.createElement('a');
+        link.href = whatsappLink();
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'send them on WhatsApp';
+        status.append('That didn’t send. Your details are still here: try again, or ', link, ' instead.');
+      } finally {
+        submit.disabled = false;
+        submit.textContent = 'Send project details';
+      }
+    });
+
+    form.addEventListener('input', (e) => {
+      const field = (e.target as Element).closest('.field');
+      if (field?.classList.contains('has-error')) validate();
+    });
+  });
+</script>

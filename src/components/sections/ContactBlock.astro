@@ -1,0 +1,94 @@
+---
+import Icon, { type IconName } from '../ui/Icon.astro';
+import ContactForm from './ContactForm.astro';
+import { site, commitments, whatsappUrl } from '../../data/site';
+
+interface Props {
+  title?: string;
+  lead?: string;
+  service?: string;       // slug to preselect in the form
+  whatsappText?: string;
+}
+
+const {
+  title,
+  lead = `Share a few details and I’ll reply personally within ${commitments.replyHours} hours, with next steps or a few questions.`,
+  service,
+  whatsappText = "Hi Virat Digital, I'd like to talk about a project.",
+} = Astro.props;
+
+const channels: { icon: IconName; label: string; value: string; href: string; external?: boolean }[] = [
+  { icon: 'whatsapp', label: 'WhatsApp', value: site.whatsapp.display, href: whatsappUrl(whatsappText), external: true },
+  { icon: 'mail', label: 'Email', value: site.email, href: `mailto:${site.email}` },
+  ...site.socials.map((s) => ({ icon: s.name.toLowerCase() as IconName, label: s.name, value: s.handle, href: s.url, external: true })),
+];
+---
+
+<section class="section contact-block" id="contact" data-contact>
+  <div class="container contact-layout">
+    <div class="contact-head">
+      {title && <h2>{title}</h2>}
+      <p class="t-lead">{lead}</p>
+    </div>
+
+    <ContactForm service={service} />
+
+    <ul class="contact-list" aria-label="Other ways to reach me">
+      {channels.map((c) => (
+        <li>
+          <span class="contact-icon"><Icon name={c.icon} /></span>
+          <div>
+            <span class="contact-label">{c.label}</span>
+            <a class="contact-value" href={c.href} {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{c.value}</a>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    /* Phones: heading, form, then the other channels.
+       Laptops: heading and channels on the left, form on the right. */
+    .contact-layout {
+      display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-10);
+      grid-template-areas: "head" "form" "channels";
+    }
+    .contact-head { grid-area: head; }
+    .contact-layout > :global(.contact-form) { grid-area: form; }
+    .contact-list { grid-area: channels; }
+    @media (min-width: 64em) {
+      .contact-layout {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+        grid-template-areas: "head form" "channels form";
+        grid-template-rows: auto 1fr;
+        column-gap: var(--space-16);
+      }
+    }
+    .contact-head h2 { margin-bottom: var(--space-5); }
+    .contact-head .t-lead:only-child { margin-top: 0; }
+
+    .contact-list { display: grid; gap: var(--space-4); align-content: start; }
+    .contact-list li { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
+    .contact-list li > div { min-width: 0; }
+    .contact-icon {
+      display: grid; place-items: center; flex: none;
+      width: 2.75rem; height: 2.75rem;
+      border: 1px solid var(--line-strong); border-radius: var(--radius-control);
+      color: var(--text-muted);
+    }
+    .contact-icon :global(svg) { width: 1.125rem; height: 1.125rem; }
+    .contact-label {
+      display: block;
+      color: var(--text-subtle);
+      font-size: var(--text-sm); font-stretch: var(--wdth-condensed); line-height: 1.3;
+    }
+    .contact-value {
+      color: var(--text); font-weight: var(--weight-medium);
+      overflow-wrap: anywhere;
+      text-decoration-color: var(--line-strong);
+    }
+    .contact-value:hover { text-decoration-color: var(--link-underline); }
+  }
+</style>

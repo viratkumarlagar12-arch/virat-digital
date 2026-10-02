@@ -1,0 +1,64 @@
+---
+import Media from '../ui/Media.astro';
+import { getServices, hasPage, statusLabel, type Project } from '../../lib/content';
+
+interface Props {
+  projects: Project[];
+  headingLevel?: 2 | 3;
+}
+
+const { projects, headingLevel = 3 } = Astro.props;
+const Heading = headingLevel === 2 ? 'h2' : 'h3';
+const serviceTitle = Object.fromEntries((await getServices()).map((s) => [s.id, s.data.title]));
+
+// Cards span columns by format, so mixed ratios land at similar heights.
+const span = { thumbnail: 5, og: 5, site: 4, square: 3, banner: 8 } as const;
+const sizes = (format: keyof typeof span) => `(min-width: 64em) ${Math.round((span[format] / 12) * 100)}vw, (min-width: 48em) 50vw, 100vw`;
+---
+
+<div class="work-grid">
+  {
+    projects.map((p) => {
+      const linked = hasPage(p);
+      return (
+        <article
+          class:list={['card card-flush work-card', { 'card-interactive': linked }]}
+          data-format={p.data.format}
+          data-service={p.data.service.id}
+          style={`--span: ${span[p.data.format]}`}
+        >
+          <Media
+            format={p.data.format}
+            image={p.data.cover}
+            alt={p.data.coverAlt}
+            word={p.data.word}
+            badge={statusLabel[p.data.status]}
+            sizes={sizes(p.data.format)}
+          />
+          <div class="card-body">
+            <p class="t-label">{serviceTitle[p.data.service.id]}</p>
+            <Heading class="t-title card-title">
+              {linked ? <a class="card-link" href={`/work/${p.id}/`}>{p.data.title}</a> : p.data.title}
+            </Heading>
+            <p>{p.data.summary}</p>
+            <p class="t-caption card-foot">Tools: {p.data.tools.join(', ')}</p>
+          </div>
+        </article>
+      );
+    })
+  }
+</div>
+
+<style>
+  @layer sections {
+    .work-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--grid-gap); }
+    @media (min-width: 48em) {
+      .work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .work-card[data-format="banner"] { grid-column: span 2; }
+    }
+    @media (min-width: 64em) {
+      .work-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-auto-flow: dense; }
+      .work-card, .work-card[data-format="banner"] { grid-column: span var(--span); }
+    }
+  }
+</style>

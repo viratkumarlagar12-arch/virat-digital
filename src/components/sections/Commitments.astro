@@ -1,0 +1,59 @@
+---
+import { commitments } from '../../data/site';
+import { testimonials } from '../../data/testimonials';
+import { fill } from '../../lib/content';
+
+// Checkable promises instead of adjectives. Each must hold on every project;
+// the numbers come from site.ts.
+const items = [
+  { title: `A reply within ${commitments.replyHours} hours`, text: 'Every enquiry gets a personal answer with next steps or a few questions.' },
+  { title: 'A fixed quote before work starts', text: 'You see the price, what’s included and the timeline before you pay anything.' },
+  { title: fill('{revisions} rounds of revisions'), text: 'Stated in your quote, so feedback never turns into a surprise bill.' },
+  { title: 'You own the final files', text: 'Including editable source files, once the project is paid for.' },
+  { title: 'Progress at every milestone', text: 'You see the work as it develops, not just at the end.' },
+  { title: 'You work directly with me', text: 'No account managers or hand-offs. The person you talk to does the work.' },
+];
+---
+
+<section class="section">
+  <div class="container split split-sticky">
+    <div class="section-head">
+      <h2>What you can count on</h2>
+      <p>Promises that hold on every project, whatever its size.</p>
+    </div>
+    <ul class="feature-list">
+      {items.map((item) => (
+        <li class="feature">
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {testimonials.length > 0 && (
+    <div class="container testimonials" data-testimonials>
+      <h2 class="t-h3">What clients say</h2>
+      <ul class="grid grid-2">
+        {testimonials.map((t) => (
+          <li>
+            <figure class="card">
+              <blockquote><p>{t.quote}</p></blockquote>
+              <figcaption class="t-small">
+                {t.url ? <a href={t.url}>{t.name}</a> : t.name}, {t.role}
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</section>
+
+<style>
+  @layer sections {
+    .testimonials { margin-top: var(--section-head-gap); }
+    .testimonials h2 { margin-bottom: var(--space-6); }
+    .testimonials blockquote { margin: 0; color: var(--text); font-size: var(--text-md); }
+  }
+</style>

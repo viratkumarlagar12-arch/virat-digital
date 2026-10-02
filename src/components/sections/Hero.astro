@@ -1,0 +1,100 @@
+---
+import Icon from '../ui/Icon.astro';
+import { whatsappUrl } from '../../data/site';
+import { getServices } from '../../lib/content';
+
+const services = await getServices();
+
+---
+
+<section class="hero" data-hero>
+  <div class="container">
+    <!-- Fixed line breaks so text never wraps on its own: the fallback font,
+         Archivo arriving or the width animation can't move a word to another
+         line. Phones get 6 lines, tablets and up get 4. The lines don't nest,
+         so each size has its own copy; the hidden one is display:none and so
+         is skipped by screen readers. On laptops each line is one text node,
+         so widening it moves no word's starting point (no layout shift). -->
+    <h1 class="hero-title t-display">
+      <span class="hero-lines-sm">Design,<br /> websites and<br /> automation for<br /> creators and<br /> growing<br /> businesses.</span>
+      <span class="hero-lines-lg"><span>Design, websites</span> <span>and automation for</span> <span>creators and growing</span> <span>businesses.</span></span>
+    </h1>
+
+    <div class="hero-foot">
+      <p class="t-lead">
+        I design logos and YouTube thumbnails, build fast websites and set up AI workflows. You work with me
+        directly, from the first message to the final files.
+      </p>
+      <div class="cluster hero-actions">
+        <a class="btn btn-primary btn-lg" href="/contact/">Start a project</a>
+        <a class="btn btn-outline btn-lg" href={whatsappUrl("Hi Virat Digital, I'd like to talk about a project.")} target="_blank" rel="noopener noreferrer">
+          <Icon name="whatsapp" /> Message on WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <ul class="service-index" aria-label="Services">
+      {services.map((s) => (
+        <li>
+          <a href={`/services/${s.id}/`}>
+            <strong>{s.data.title}</strong>
+            <span>{s.data.menuLine}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .hero { padding-block: clamp(2.5rem, 1rem + 5vw, 6rem) var(--section-y-sm); }
+    /* Each size is the space available divided by the widest line's width
+       in em (measured from the font), with a little room to spare. */
+    .hero-title {
+      white-space: nowrap;
+      font-size: min(var(--text-display), (100vw - 2 * var(--gutter)) / 7.1);  /* "automation for": 6.8em at 100% */
+    }
+    .hero-lines-lg { display: none; }
+    @media (min-width: 48em) {
+      .hero-title { font-size: min(var(--text-display), (100vw - 2 * var(--gutter)) / 11.5); }  /* "creators and growing": 11.1em at 112.5% */
+      .hero-lines-sm { display: none; }
+      .hero-lines-lg { display: block; }
+      .hero-lines-lg > span { display: block; }
+    }
+    /* Laptops and up: 12.4em at 125%. The width animates from condensed to
+       expanded once, on load; with the breaks fixed, nothing reflows. */
+    @media (min-width: 64em) {
+      .hero-title {
+        font-size: min(6rem, (100vw - 2 * var(--gutter)) / 12.8);
+        animation: hero-expand var(--dur-hero) var(--ease-out) 150ms both;
+      }
+    }
+    @keyframes hero-expand { from { font-stretch: var(--wdth-condensed); } }
+
+    /* Lead, then actions: stacked at every size, so the block's height never
+       depends on how wide the buttons render (fallback font vs Archivo). */
+    .hero-foot { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-8); margin-top: clamp(var(--space-8), 4vw, var(--space-12)); }
+    .hero-actions .btn { width: 100%; }
+    @media (min-width: 40em) { .hero-actions .btn { width: auto; } }
+
+    /* Service index: each service, one tap from the first screen */
+    .service-index {
+      display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5) var(--grid-gap);
+      margin-top: clamp(var(--space-12), 6vw, var(--space-20));
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--line-strong);
+    }
+    @media (min-width: 40em) { .service-index { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (min-width: 64em) { .service-index { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+    .service-index a { display: block; color: var(--text); text-decoration: none; }
+    .service-index strong {
+      display: block;
+      font-size: var(--text-lg); font-weight: var(--weight-semibold); line-height: var(--leading-title);
+      text-decoration: underline 2px transparent; text-underline-offset: .28em;
+      transition: text-decoration-color var(--dur-fast) var(--ease-out);
+    }
+    .service-index a:hover strong { text-decoration-color: var(--link-underline); }
+    .service-index span { display: block; margin-top: var(--space-1); color: var(--text-subtle); font-size: var(--text-sm); line-height: 1.45; }
+  }
+</style>

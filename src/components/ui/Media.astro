@@ -1,0 +1,39 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+// Shows work at the ratio it ships in. Until a real image exists, the
+// project's word is set large as a typographic placeholder.
+interface Props {
+  format: 'thumbnail' | 'banner' | 'site' | 'square' | 'og';
+  image?: ImageMetadata;
+  alt?: string;
+  word: string;
+  badge?: string;
+  sizes?: string;
+  priority?: boolean;
+  framed?: boolean;
+  class?: string;
+}
+
+const { format, image, alt = '', word, badge, sizes = '(min-width: 64em) 40vw, (min-width: 48em) 50vw, 100vw', priority = false, framed = false, class: className } = Astro.props;
+---
+
+<div class:list={['media', { 'media-framed': framed }, className]} data-format={format}>
+  {badge && <span class="badge">{badge}</span>}
+  {
+    image ? (
+      <Picture
+        src={image}
+        alt={alt}
+        formats={['avif', 'webp']}
+        widths={[480, 800, 1200, 1600].filter((w) => w <= image.width)}
+        sizes={sizes}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
+      />
+    ) : (
+      <span class="media-word" style={`--chars: ${word.length}`} aria-hidden="true">{word}</span>
+    )
+  }
+</div>
