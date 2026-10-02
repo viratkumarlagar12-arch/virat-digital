@@ -73,4 +73,14 @@ test.describe('theme', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await expect(page.getByRole('button', { name: 'Switch to dark theme' })).toBeVisible();
   });
+
+  test("the marigold band's button is filled with each theme's ink", async ({ page }) => {
+    const button = page.locator('.band-accent .btn-secondary');
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto('/work/virat-digital-website/');
+    await expect(button).toHaveCSS('background-color', 'rgb(11, 11, 15)');
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.goto('/work/virat-digital-website/');
+    await expect(button).toHaveCSS('background-color', 'rgb(14, 15, 40)');
+  });
 });

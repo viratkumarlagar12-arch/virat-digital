@@ -210,7 +210,7 @@
   .band-accent {
     --text: var(--ink-950);
     --text-muted: var(--ink-800);
-    --surface-inverse: var(--ink-950);
+    --surface-inverse: var(--on-accent-fill);
     --surface-inverse-hover: var(--ink-800);
     --text-inverse: var(--ink-50);
     --link-underline: var(--ink-950);
