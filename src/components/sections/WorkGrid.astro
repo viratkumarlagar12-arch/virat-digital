@@ -25,9 +25,11 @@ const sizes = (format: keyof typeof span) => `(min-width: 64em) ${Math.round((sp
           class:list={['card card-flush work-card', { 'card-interactive': linked }]}
           data-format={p.data.format}
           data-service={p.data.service.id}
+          data-project={p.id}
           style={`--span: ${span[p.data.format]}`}
         >
           <Media
+            transitionName={linked ? `work-${p.id}` : undefined}
             format={p.data.format}
             image={p.data.cover}
             alt={p.data.coverAlt}

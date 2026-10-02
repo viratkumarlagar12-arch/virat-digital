@@ -1,0 +1,109 @@
+---
+import { render } from 'astro:content';
+import { Picture } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/sections/PageHero.astro';
+import Media from '../../components/ui/Media.astro';
+import { getProjects, getServices, hasPage, statusLabel, type Project } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return (await getProjects()).filter(hasPage).map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+const service = (await getServices()).find((s) => s.id === data.service.id)!;
+---
+
+<BaseLayout title={`${data.title} | Virat Digital`} description={data.summary} type="article">
+  <PageHero title={data.title} lead={data.summary} crumbs={[{ label: 'Work', href: '/work/' }]}>
+    <ul class="project-meta">
+      <li><span class="badge">{statusLabel[data.status]}</span></li>
+      <li><a href={`/services/${service.id}/`}>{service.data.title}</a></li>
+      <li>Tools: {data.tools.join(', ')}</li>
+    </ul>
+  </PageHero>
+
+  <div class="container container-wide">
+    <Media
+      class="project-cover"
+      format={data.format}
+      image={data.cover}
+      alt={data.coverAlt}
+      word={data.word}
+      framed
+      priority
+      sizes="(min-width: 90rem) 90rem, 100vw"
+      transitionName={`work-${project.id}`}
+    />
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="prose"><Content /></div>
+    </div>
+  </section>
+
+  {data.gallery.length > 0 && (
+    <section class="section-sm project-gallery" aria-label="More images">
+      <div class="container container-wide">
+        <ul class="gallery">
+          {data.gallery.map((g) => (
+            <li class:list={{ 'is-wide': g.src.width > g.src.height }}>
+              <figure>
+                <Picture
+                  src={g.src}
+                  alt={g.alt}
+                  formats={['avif', 'webp']}
+                  widths={[400, 800, 1200].filter((w) => w <= g.src.width)}
+                  sizes="(min-width: 64em) 33vw, 100vw"
+                  loading="lazy"
+                />
+                {g.caption && <figcaption class="t-small">{g.caption}</figcaption>}
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <section class="band-accent project-next">
+    <div class="container">
+      <h2 class="t-h2">Want something like this for your business?</h2>
+      <div class="cluster">
+        <a class="btn btn-secondary btn-lg" href="/contact/">Start a project</a>
+        <a class="link-action" href="/work/">See all work</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  @layer sections {
+    .project-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-6); margin-top: var(--space-8); font-size: var(--text-sm); }
+    .project-meta a { color: var(--text); }
+    .project-cover { border-radius: var(--radius-panel); box-shadow: var(--shadow-3); }
+    .gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-10) var(--grid-gap); align-items: start; }
+    /* Columns follow each image's shape: phone screenshots narrow, desktop wide */
+    @media (min-width: 48em) {
+      .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .gallery li.is-wide { grid-column: span 2; }
+    }
+    @media (min-width: 64em) {
+      .gallery { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+      .gallery li { grid-column: span 3; }
+      .gallery li.is-wide { grid-column: span 6; }
+    }
+    .gallery :global(img) { width: 100%; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--frame-bg); }
+    .gallery figcaption { margin-top: var(--space-3); color: var(--text-subtle); max-width: 48ch; }
+    .project-next { padding-block: var(--section-y-sm); }
+    .project-next h2 { max-width: 20ch; }
+    .project-next .cluster { --cluster-gap: var(--space-6); margin-top: var(--space-8); }
+  }
+</style>

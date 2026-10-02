@@ -14,12 +14,13 @@ interface Props {
   priority?: boolean;
   framed?: boolean;
   class?: string;
+  transitionName?: string;  // pairs this frame with the same image on another page
 }
 
-const { format, image, alt = '', word, badge, sizes = '(min-width: 64em) 40vw, (min-width: 48em) 50vw, 100vw', priority = false, framed = false, class: className } = Astro.props;
+const { format, image, alt = '', word, badge, sizes = '(min-width: 64em) 40vw, (min-width: 48em) 50vw, 100vw', priority = false, framed = false, class: className, transitionName } = Astro.props;
 ---
 
-<div class:list={['media', { 'media-framed': framed }, className]} data-format={format}>
+<div class:list={['media', { 'media-framed': framed }, className]} data-format={format} style={transitionName ? `view-transition-name: ${transitionName}` : undefined}>
   {badge && <span class="badge">{badge}</span>}
   {
     image ? (

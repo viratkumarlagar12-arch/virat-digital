@@ -1,11 +1,90 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/sections/PageHero.astro';
+import WorkGrid from '../../components/sections/WorkGrid.astro';
+import ContactBlock from '../../components/sections/ContactBlock.astro';
+import { getProjects, getServices } from '../../lib/content';
+
+const projects = await getProjects();
+const services = (await getServices()).filter((s) => projects.some((p) => p.data.service.id === s.id));
 ---
 
 <BaseLayout
   title="Work | Virat Digital"
-  description="Concept and self-initiated projects across brand identity, YouTube design, websites, AI automation and marketing."
+  description="Concept and self-initiated projects across brand identity, YouTube design, websites, AI automation and marketing, each labelled for what it is."
 >
-  <PageHero title="Work" />
+  <PageHero
+    title="Work"
+    lead="Client projects are under way. Until they can be shown, here are concept and self-initiated pieces, each labelled for what it is, and shown at the size and shape it would really be used."
+  />
+
+  <section class="section-sm work-index">
+    <div class="container">
+      <!-- Revealed by script; without JavaScript every project is simply listed. -->
+      <div class="work-filter" role="group" aria-label="Filter by service" hidden>
+        <button type="button" class="chip-btn" aria-pressed="true" data-filter="all">All</button>
+        {services.map((s) => <button type="button" class="chip-btn" aria-pressed="false" data-filter={s.id}>{s.data.title}</button>)}
+      </div>
+      <p class="work-filter-status t-small" role="status" data-filter-status></p>
+      <WorkGrid projects={projects} headingLevel={2} />
+    </div>
+  </section>
+
+  <ContactBlock title="Have a project in mind?" />
 </BaseLayout>
+
+<style>
+  @layer sections {
+    .work-filter { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .work-filter[hidden] { display: none; }
+    .chip-btn {
+      min-height: 2.75rem; padding: 0 var(--space-4);
+      border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+      background: transparent; color: var(--text-muted);
+      font-size: var(--text-sm); font-weight: var(--weight-medium);
+      cursor: pointer;
+      transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+    }
+    .chip-btn:hover { border-color: var(--line-control); color: var(--text); }
+    .chip-btn[aria-pressed="true"] { border-color: var(--text); background: var(--surface-inverse); color: var(--text-inverse); }
+    .work-filter-status { min-height: 1.5rem; margin-block: var(--space-4) var(--space-6); color: var(--text-subtle); }
+    .work-index :global(.work-card[hidden]) { display: none; }
+  }
+</style>
+
+<script>
+  const filter = document.querySelector<HTMLElement>('.work-filter');
+  const status = document.querySelector<HTMLElement>('[data-filter-status]');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.work-index .work-card'));
+
+  if (filter && status) {
+    const buttons = Array.from(filter.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const label = (id: string) => buttons.find((b) => b.dataset.filter === id)?.textContent ?? '';
+
+    const apply = (id: string, announce: boolean) => {
+      const valid = buttons.some((b) => b.dataset.filter === id) ? id : 'all';
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === valid)));
+      let shown = 0;
+      cards.forEach((card) => {
+        const match = valid === 'all' || card.dataset.service === valid;
+        card.hidden = !match;
+        if (match) shown++;
+      });
+      const noun = shown === 1 ? 'project' : 'projects';
+      const message = valid === 'all' ? `Showing all ${shown} ${noun}` : `Showing ${shown} ${noun} in ${label(valid)}`;
+      // Announce only after a click; on arrival the text is set quietly.
+      status.textContent = announce || valid !== 'all' ? message : '';
+      const url = new URL(location.href);
+      if (valid === 'all') url.searchParams.delete('service');
+      else url.searchParams.set('service', valid);
+      history.replaceState(null, '', url);
+    };
+
+    filter.hidden = false;
+    filter.addEventListener('click', (e) => {
+      const button = (e.target as Element).closest<HTMLButtonElement>('[data-filter]');
+      if (button) apply(button.dataset.filter!, true);
+    });
+    apply(new URLSearchParams(location.search).get('service') ?? 'all', false);
+  }
+</script>

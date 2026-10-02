@@ -13,6 +13,7 @@ export const ROUTES = [
   '/services/',
   ...SERVICE_SLUGS.map((slug) => `/services/${slug}/`),
   '/work/',
+  '/work/virat-digital-website/',
   '/about/',
   '/contact/',
   '/privacy/',

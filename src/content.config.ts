@@ -42,6 +42,7 @@ const work = defineCollection({
         cover: image().optional(),
         coverAlt: z.string().optional(),
         word: z.string(),            // typographic placeholder until a cover exists
+        gallery: z.array(z.object({ src: image(), alt: z.string(), caption: z.string().optional() })).default([]),
         featured: z.boolean().default(false),
         order: z.number(),
         client: z.string().optional(),

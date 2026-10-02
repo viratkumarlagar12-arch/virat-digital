@@ -197,3 +197,9 @@
     }
   }
 }
+
+/* Page-to-page navigation cross-fades; a work card's image morphs into the
+   project page's cover (paired by view-transition-name). Kept outside the
+   layer: it's a document-level setting, not a style rule. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
