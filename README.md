@@ -1,156 +1,124 @@
-# Virat Digital — Brand Website
+# Virat Digital website
 
-A premium single-page website for **Virat Digital** — an independent digital solutions
-brand covering graphic design, website development, AI automation and digital marketing.
-Dark and light themes, built on a small token-based design system ("Ink & Marigold").
-Plain HTML, CSS and JavaScript — no build step, no framework, no dependencies.
-
-## Files
-
-```
-MyWebsite/
-├── index.html          # All page sections (hero, services, trust, process, work, about, cta, contact)
-├── styleguide.html     # Living design system reference (not linked from the site, noindex)
-├── css/
-│   ├── tokens.css      # Design tokens: palette, both themes, type, spacing, radius, shadows, motion, layout
-│   ├── base.css        # Reset, type roles, links and focus, layout primitives (container, section, grid, split)
-│   ├── components.css  # Buttons, cards, chips, badges, media frame, header/nav, theme toggle, forms, steps, footer
-│   └── styles.css      # Page sections, composed from the three files above
-├── js/main.js          # Theme toggle, header state, mobile nav, current-section highlight, process rail, form validation
-├── favicon.svg         # Marigold "V" mark
-└── README.md
-```
+The website for **Virat Digital**, an independent one-person studio for graphic design,
+YouTube design, websites, AI automation and digital marketing. It's a static site built with
+[Astro](https://astro.build): plain HTML pages, a small token-based design system
+("Ink & Marigold"), light and dark themes, and about 6 KB of JavaScript per page.
 
 ## Run it
 
-Double-click `index.html`, or serve it locally:
+Needs Node 22.12 or newer.
 
-```powershell
-# Python
-python -m http.server 8000
-
-# or Node
-npx serve .
+```bash
+npm install
+npm run dev        # local site at http://localhost:4321, reloads as you edit
+npm run build      # production build into dist/
+npm run preview    # serve the production build
+npm run check      # type-check
+npm test           # browser tests (Playwright, uses your installed Chrome)
 ```
 
-Then open http://localhost:8000
+## Where things live
 
-## Honesty-first content — please read before publishing
-
-This site contains **no fabricated credibility**: no fake client counts, ad-spend figures,
-years-of-experience claims, testimonials, review scores or logos. A few things are
-intentionally left as clearly-marked placeholders for you to fill in:
-
-| Placeholder | Where | What to do |
-| --- | --- | --- |
-| — | — | All contact channels (Email, WhatsApp, Instagram, YouTube, Facebook) are now real, clickable links in both the Contact section and the footer social icons — no placeholders remain there. |
-| Contact form backend | `index.html` — the "Setup note" above the submit button, and `js/main.js` | The form validates in the browser but **does not send anywhere yet** — the note tells visitors that honestly. Wire it to a real endpoint (see below), then remove the note |
-| Open Graph image | `index.html` `<head>` — commented-out `og:image` tag | Add a real 1200×630 image at `assets/og-image.jpg`, then uncomment the tag |
-| Canonical URL | `index.html` `<head>` — commented-out `<link rel="canonical">` | Add your real domain once you have one, then uncomment |
-| "Selected Work" projects | `index.html` — `#work` section | All 6 are explicitly labeled **Concept** (CSS/SVG mockups, not real screenshots), each with a `Tools:` line but no invented "results." Swap in real project images/case studies — and only add a result line — once a project is real client work |
-| About copy | `index.html` — `#about` section | Written to reflect an independent creator building the brand, not an established agency |
-
-Nothing else in the copy claims stats, clients or results that don't exist yet.
-
-## Change history
-
-### Design system pass (October 2026)
-
-- New token-based design system ("Ink & Marigold") split across `tokens.css`, `base.css`,
-  `components.css` and `styles.css`; every colour now comes from a token (previously 23 were
-  hard-coded).
-- Dark and light themes: follows the device setting, with a remembered manual toggle.
-- Archivo replaces Inter; headlines use its width axis.
-- Removed decorative chrome: all-caps eyebrows, glowing dots, non-sequence numbering, the
-  orbiting hero graphic, blur blobs, scroll progress bar, hero tilt, card cursor glow and
-  staggered fade-ins. The one remaining page-load animation is the hero headline widening.
-- Hero now ends with a service index linking to each service card.
-- Service links say where they go ("Start a design project") and preselect that service in
-  the contact form.
-- About section is text-led; headings and tags use sentence case.
-- Process steps keep full-strength text (inactive steps were dimmed below WCAG contrast).
-- Added `styleguide.html`.
-
-### Earlier polish pass
-
-This was an improvement pass on the existing design system, not a rebuild. Fixed:
-
-- **Mobile hero height** — `.hero` had its own padding that ignored the mobile breakpoints; it's now explicitly reduced at 960px and 620px, and the hero visual shrinks (with orbiting node labels hidden) below 620px so it stays compact.
-- **Portfolio grid** — was 5 cards in a 3-column grid (an unbalanced orphan row); added a 6th concept project (YouTube Banner) and a proper 2-column tablet layout, so it's always a clean grid at every breakpoint.
-- **Contact form fields** — replaced "Budget Range" with "WhatsApp / Phone" (optional) and updated the Service dropdown to match your real service list.
-- **Honest form messaging** — the success message no longer implies a message was delivered; a visible "Setup note" and the post-submit text both say plainly that the form isn't connected to a live inbox yet.
-- **Trust section** — the old "Why" section's philosophy points were replaced with the specific, real trust signals you asked for (clear communication, transparent process, responsive design, modern technology, custom solutions, direct collaboration) — no fake stats needed.
-- **Services** — each card now states who it's for, not just what it is; removed a self-referential duplicate tag ("Digital Marketing" listed inside the Digital Marketing card); tags now match your exact service list (Logo Design, Brand Identity, YouTube Thumbnail/Banner Design, etc.).
-- **Accessibility** — `--text-faint` and the default `.btn-primary` background were both slightly adjusted; each was below the 4.5:1 WCAG AA contrast minimum on the dark surfaces/white text they're used with. Mobile menu now returns keyboard focus to the toggle button on Escape.
-- **SEO** — tightened the meta description to a proper length, added a commented-out canonical tag placeholder.
-- **Cleanup** — removed an unused CSS variable (`--container-narrow`), added `max-width` (58ch) to long-form paragraphs so line length stays readable regardless of column width.
-
-## Customising
-
-| What | Where |
+| To change… | Edit |
 | --- | --- |
-| Brand name / logo | `index.html` — search for `Virat` (nav, hero-adjacent, footer) |
-| Colours | `css/tokens.css` — primitives at the top, theme values in the semantic blocks |
-| Fonts | Google Fonts `<link>` in `index.html` and `styleguide.html`, and `--font-sans` in `tokens.css` |
-| Services & sub-items | `#services` section in `index.html` |
-| Trust signals | `#trust` section in `index.html` |
-| Process steps | `#process` section |
-| Contact form fields/options | `#contact` section |
+| Name, email, WhatsApp number, social links | `src/data/site.ts` |
+| Promises shown on the site (reply time, revision rounds) | `commitments` in `src/data/site.ts` |
+| A service: headline, copy, what's included, FAQ | `src/content/services/<service>.md` |
+| A project in the work section | `src/content/work/<project>.md` |
+| Home page FAQ | `src/data/faq.ts` |
+| Client testimonials (real ones only) | `src/data/testimonials.ts` |
+| Colours, type, spacing | `src/styles/tokens.css` |
+| Pages | `src/pages/` |
+
+Every page, the menu, the footer and the contact form read from these files, so a change made
+once shows up everywhere.
+
+### Adding real work
+
+1. Put the image in `src/assets/work/` (PNG or JPG; it's converted to AVIF/WebP at build time).
+2. In the project's file in `src/content/work/`, add `cover:` with the image path and
+   `coverAlt:` describing what the design shows.
+3. Write the case study below the frontmatter (brief, constraints, approach). A project gets its
+   own page as soon as it has a cover image or written text.
+4. Set `status:` honestly: `concept`, `self-initiated` or `client`. A `result:` line is only
+   accepted for `client` work; the build refuses it otherwise.
+
+The home page hero currently lists the services. Once three or more projects have real images,
+a strip showing them at their true sizes is planned there; it isn't built yet.
+
+### Testimonials
+
+Add real client quotes, used with permission, to `src/data/testimonials.ts`. The testimonials
+section stays hidden while that list is empty.
+
+## Deploying to Netlify
+
+1. Connect the repository to Netlify. It detects Astro: build command `npm run build`,
+   publish directory `dist`.
+2. **Turn on form detection** (Site configuration → Forms). Without it, contact form
+   submissions go nowhere. Then set up email notifications for the `contact` form.
+3. Once you have a domain, add an environment variable `SITE_URL` (for example
+   `https://www.yourdomain.com`) and redeploy. That switches on canonical URLs, link-preview
+   images, structured data, the sitemap and the sitemap line in `robots.txt`. Until it's set,
+   they're left out rather than pointing at a made-up address.
+4. After launch, add the site to Google Search Console and submit `/sitemap-index.xml`.
+
+The form posts to Netlify Forms in the background and shows "Project details sent" or, if
+sending fails, a WhatsApp link with the visitor's message filled in. Without JavaScript it posts
+normally and lands on `/thanks/`. A hidden field (`bot-field`) catches spam bots.
+
+## Honesty rules
+
+The site makes no claims it can't back up: no invented client counts, results, testimonials,
+reviews or logos. Concept and self-initiated work is labelled as such on every card and page.
+Keep it that way as content is added.
 
 ## Design system
 
-The full reference, with live components and contrast checks in both themes, is
-`styleguide.html`. Open it next to the site while you work. It isn't linked from the site
-and is marked `noindex`.
+Open `/styleguide/` on the running site (it isn't linked or indexed). It shows every colour pair
+with its contrast ratio in both themes, the type scale, buttons, media frames and form fields,
+rendered with the real code.
 
-**Direction: Ink & Marigold.** Deep indigo ink backgrounds, one marigold accent, and Archivo's
-width axis as the brand voice: headlines are set expanded and widen as the screen grows,
-body text stays at normal width.
+- **Tokens** (`src/styles/tokens.css`) come in three layers: primitives (`--ink-*`,
+  `--marigold-*`), semantic roles (`--bg`, `--text`, `--accent`…) defined once each with
+  `light-dark()`, and component-level props inside `components.css`. Components use semantic
+  tokens only, never raw colours.
+- **Cascade layers**: `tokens`, `base`, `components`, `sections`. Later layers win, so page
+  styles never fight component styles.
+- **Type**: Archivo only, self-hosted and trimmed to the weights (400–800) and widths
+  (87.5–125%) in use. Headlines are set wide; body text at normal width.
+- **Motion**: the home headline widening on laptops is the only thing that moves on its own.
+  Everything else responds to the visitor, and `prefers-reduced-motion` turns motion off.
 
-**Three token layers** (all in `css/tokens.css`):
+## Tests
 
-1. **Primitives** — `--ink-50 … --ink-950`, `--marigold-100 … --marigold-900`, status colours.
-   Raw values; components never use them directly.
-2. **Semantic** — role names such as `--bg`, `--surface`, `--text`, `--text-muted`, `--accent`,
-   `--accent-text`, `--line`, `--focus-ring`. These switch per theme.
-3. **Component** — local props at the top of each component (`--btn-bg`, `--card-pad` …).
-   Variants only swap these, so selector specificity stays flat.
+`npm test` builds the site and checks it in Chrome:
 
-Scales: spacing `--space-1 … --space-32` (name × 4px), type `--text-xs … --text-display`,
-radius by role (`--radius-control`, `--radius-card`, `--radius-panel`, `--radius-pill`),
-shadows `--shadow-1 … 3`, motion `--dur-*` and `--ease-*`. Breakpoints are mobile-first
-`min-width` queries at 40em, 48em, 64em and 80em (listed at the top of `tokens.css`).
+- every page: one H1, unique title and description, no skipped heading levels, no sideways
+  scrolling at 320px, no serious accessibility problems (axe) in either theme
+- navigation, the services menu, the mobile menu and the no-JavaScript fallbacks
+- the contact form: validation, sending, failure with WhatsApp fallback, service preselection
+- the hero doesn't shift the page as the font loads or the headline widens
+- structured data, preview images, sitemap and `robots.txt`
 
-**Themes.** Dark is the brand default. The site follows the visitor's device setting until
-they use the toggle; their choice is saved in `localStorage` under `vd-theme`. A small script
-in `<head>` applies it before first paint, so there's no flash. Without JavaScript the CSS still
-follows the device setting and the toggle is hidden.
+`CROSS=1 npm test` adds Firefox and WebKit (Safari's engine); run
+`npx playwright install firefox webkit` once first.
 
-**Rules for new work**
+## Still to decide
 
-- Use semantic tokens in components, never primitives or hex values.
-- Adding a colour: add the primitive, then the semantic token in the dark block **and both**
-  light blocks of `tokens.css` (they must stay identical), then check `styleguide.html`.
-- One primary (marigold) button per view; supporting actions use outline or ghost buttons.
-- Numbers only on real sequences (`.steps`); everything else uses `.feature-list` or cards.
-- Sentence case everywhere; no all-caps labels above headings.
-- Motion answers the visitor (hover, press, open). The hero headline is the only page-load
-  animation, and `prefers-reduced-motion` turns it off.
-- Work cards: replace the typographic `.media-word` placeholder with an `<img>` inside `.media`
-  once real work exists. Add `.card-interactive` and a `.card-link` only when a card opens a
-  real case study.
+These are written with defaults or left out until you choose:
 
-## Contact form
-
-The form validates in the browser only (name, email format, message length) — nothing is
-sent anywhere yet, and the page says so (a "Setup note" above the submit button, and an
-honest post-submit message). To make it live, replace the comment in `js/main.js`
-(`// Front-end only for now`) with a `fetch()` POST to a real endpoint (Formspree, Netlify
-Forms, a serverless function, etc.) — then remove the setup note from `index.html`.
-
-## Before you publish
-
-1. Fill in the real contact placeholders (email, WhatsApp, Instagram, YouTube).
-2. Wire the contact form to a real backend/endpoint, then remove the "Setup note."
-3. Replace concept "Selected Work" items with real projects as they're completed.
-4. Add a real Open Graph image and canonical URL if you plan to share links / have a domain.
+- **Promises**: reply within 24 hours and two revision rounds are defaults in
+  `src/data/site.ts`. Change them to what you'll keep on every project.
+- **Prices**: service pages don't show prices yet. The service files accept a `priceFrom`
+  field, but displaying it still needs adding once you decide to publish prices.
+- **Your name and photo**: the About page reads fine without them. Set `founderName` in
+  `src/data/site.ts`.
+- **Process durations**: the process steps don't give timeframes yet.
+- **Domain and email**: needed for `SITE_URL`; an address on your own domain also reads as more
+  established than a Gmail one.
+- **Privacy page**: written to describe what the site actually does. Have it checked before
+  launch, and update it if you add analytics.
+- **The line "Client projects are under way"** on the Work page, carried over from the
+  previous site. Keep it only while it's true.
