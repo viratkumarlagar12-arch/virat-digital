@@ -1,11 +1,96 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/sections/PageHero.astro';
+import Commitments from '../components/sections/Commitments.astro';
+import ContactBlock from '../components/sections/ContactBlock.astro';
+import { site } from '../data/site';
+import { getProjects, getServices } from '../lib/content';
+
+const youtube = site.socials.find((s) => s.name === 'YouTube')!;
+
+// Tools come from the projects themselves, grouped by service, so this list
+// only ever names tools that appear in real work on the site.
+const projects = await getProjects();
+const toolGroups = (await getServices())
+  .map((s) => ({
+    title: s.data.title,
+    tools: [...new Set(projects.filter((p) => p.data.service.id === s.id).flatMap((p) => p.data.tools))],
+  }))
+  .filter((g) => g.tools.length > 0);
 ---
 
 <BaseLayout
   title="About | Virat Digital"
-  description="Virat Digital is an independent, founder-led studio for design, websites, AI automation and digital marketing."
+  description="Virat Digital is an independent, one-person studio for design, websites, AI automation and digital marketing. You work directly with the person doing the work."
 >
-  <PageHero title="About" />
+  <PageHero
+    title="A one-person studio for design, websites and automation"
+    lead={`Virat Digital is independent and founder-led.${site.founderName ? ` I’m ${site.founderName}.` : ''} I handle the design, development and strategy myself, so you always talk to the person doing the work.`}
+  />
+
+  <section class="section-sm">
+    <div class="container split">
+      <div class="section-head">
+        <h2>Why one studio for all of it</h2>
+      </div>
+      <div class="prose">
+        <p>
+          Virat Digital is built around one idea: design, websites, automation and marketing work best when
+          they’re planned together, not bought as four separate jobs from four different people.
+        </p>
+        <p>
+          A logo has to work as a YouTube profile picture. A website has to bring in enquiries, and those
+          enquiries have to be answered quickly. A marketing plan only works if the brand and the site behind
+          it are ready. When one person plans all of it, the pieces fit, and nothing gets lost in a hand-off.
+        </p>
+        <p>
+          It also means you’re never passed along. The person you message on WhatsApp is the person who
+          designs, builds and delivers your project.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Commitments />
+
+  <section class="section section-alt">
+    <div class="container split">
+      <div class="section-head">
+        <h2>Tools I use</h2>
+        <p>Chosen for each job, not out of habit. These are the tools behind the work on this site.</p>
+      </div>
+      <ul class="tool-groups">
+        {toolGroups.map((g) => (
+          <li>
+            <h3 class="t-title">{g.title}</h3>
+            <ul class="chip-list">{g.tools.map((t) => <li class="chip">{t}</li>)}</ul>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <div class="section-head">
+        <h2>On YouTube</h2>
+      </div>
+      <div class="stack">
+        <p class="t-lead">
+          I also run the channel {youtube.handle}. It’s where I put into practice what I recommend to clients:
+          thumbnails, channel branding and a steady publishing rhythm.
+        </p>
+        <p><a class="btn btn-outline" href={youtube.url} target="_blank" rel="noopener noreferrer">Visit {youtube.handle}</a></p>
+      </div>
+    </div>
+  </section>
+
+  <ContactBlock title="Work with me" />
 </BaseLayout>
+
+<style>
+  @layer sections {
+    .tool-groups { display: grid; gap: var(--space-8); }
+    .tool-groups h3 { margin-bottom: var(--space-3); }
+  }
+</style>
