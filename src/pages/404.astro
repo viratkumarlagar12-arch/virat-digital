@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/sections/PageHero.astro';
+---
+
+<BaseLayout
+  title="Page not found | Virat Digital"
+  description="This page doesn't exist. It may have moved when the Virat Digital site was rebuilt. Head to the home page, services or work instead."
+  noindex
+>
+  <PageHero title="This page doesn't exist" lead="It may have moved when the site was rebuilt, or the link has a typo.">
+    <div class="cluster">
+      <a class="btn btn-primary btn-lg" href="/">Go to the home page</a>
+      <a class="btn btn-outline btn-lg" href="/services/">See services</a>
+    </div>
+  </PageHero>
+</BaseLayout>

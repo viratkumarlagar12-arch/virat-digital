@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import Icon from '../ui/Icon.astro';
+import Logo from './Logo.astro';
+import { site, nav, whatsappUrl } from '../../data/site';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <Logo label="Virat Digital home" />
+        <p class="footer-tagline">Design, websites and automation for creators and growing businesses.</p>
+        <div class="footer-social">
+          {site.socials.map((s) => (
+            <a class="icon-btn" href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.name}>
+              <Icon name={s.name.toLowerCase() as 'instagram' | 'youtube' | 'facebook'} />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer">
+        <div>
+          <h2 class="footer-heading">Services</h2>
+          <ul>
+            {services.map((s) => <li><a href={`/services/${s.id}/`}>{s.data.title}</a></li>)}
+          </ul>
+        </div>
+        <div>
+          <h2 class="footer-heading">Studio</h2>
+          <ul>
+            {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          </ul>
+        </div>
+        <div>
+          <h2 class="footer-heading">Get in touch</h2>
+          <ul>
+            <li><a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">WhatsApp {site.whatsapp.display}</a></li>
+            <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {year} Virat Digital</p>
+      <a href="/privacy/">Privacy</a>
+    </div>
+  </div>
+</footer>

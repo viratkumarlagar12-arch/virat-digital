@@ -1,0 +1,263 @@
+/* =========================================================
+   Virat Digital — design tokens (src/styles/tokens.css)
+
+   Direction: "Ink & Marigold". Deep indigo ink, one marigold accent, and
+   Archivo's width axis as the brand voice: headlines run expanded
+   ("Virat" means immense), body text runs at normal width.
+
+   Three layers:
+   1. Primitives: raw palette and scales. Components never use these directly.
+   2. Semantic:   role names (--bg, --text, --accent ...). Each is defined
+                  once with light-dark(), so both themes live on one line.
+   3. Component:  local --btn-*, --card-* ... props at the top of each component
+                  in components.css, built only from the semantic layer.
+
+   Themes: color-scheme decides which half of light-dark() applies. It
+   follows the device setting until the visitor uses the theme toggle,
+   which sets data-theme on <html>. Dark is the brand default.
+
+   Breakpoints (mobile-first, always min-width; custom properties can't be
+   used inside @media, so these are the reference values):
+     sm  40em   640px   large phones
+     md  48em   768px   tablets
+     lg  64em  1024px   laptops; desktop navigation starts here
+     xl  80em  1280px   wide desktops
+   ========================================================= */
+
+@layer tokens, base, components, sections;
+
+@layer tokens {
+  /* Archivo, trimmed to the axes the site uses (wght 400-800, wdth 87.5-125%)
+     and subset to Latin. The fallback is Arial resized to Archivo's metrics,
+     so text doesn't move when the real font arrives. */
+  @font-face {
+    font-family: "Archivo";
+    src: url("/fonts/archivo-vd.woff2") format("woff2");
+    font-weight: 400 800;
+    font-stretch: 87.5% 125%;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Archivo Fallback";
+    src: local("Arial");
+    size-adjust: 98.86%;
+    ascent-override: 88.81%;
+    descent-override: 21.24%;
+    line-gap-override: 0%;
+  }
+
+  :root {
+    /* ---- 1. Primitives: ink (indigo-tinted neutral, hue 277) ---- */
+    --ink-950: #0e0f28;
+    --ink-925: #131530;
+    --ink-900: #181b37;
+    --ink-875: #1f2240;
+    --ink-800: #2c304c;
+    --ink-700: #42465e;
+    --ink-600: #5e6277;
+    --ink-500: #7c7f91;
+    --ink-400: #9ea1b0;
+    --ink-300: #bec0cb;
+    --ink-200: #d9dae2;
+    --ink-100: #eaebf1;
+    --ink-50:  #f5f5f9;
+    --ink-25:  #fafbfd;
+    --white:   #ffffff;
+
+    /* ---- 1. Primitives: true neutrals, only behind work images ---- */
+    --neutral-850: #1d1e24;
+    --neutral-100: #e8e8eb;
+
+    /* ---- 1. Primitives: marigold (hue 74) ---- */
+    --marigold-100: #fef1e1;
+    --marigold-200: #ffe3bf;
+    --marigold-300: #ffd093;
+    --marigold-400: #ffba55;
+    --marigold-500: #f5a509;
+    --marigold-600: #d48e02;
+    --marigold-700: #b17500;
+    --marigold-800: #8e5e01;
+    --marigold-900: #6a4400;
+
+    /* ---- 1. Primitives: status ---- */
+    --red-50:    #fcecea;
+    --red-400:   #f47b74;
+    --red-700:   #b02b27;
+    --green-400: #63d18f;
+    --green-700: #0b7643;
+
+    /* ---- Typography ---- */
+    --font-sans: "Archivo", "Archivo Fallback", "Helvetica Neue", Arial, system-ui, sans-serif;
+
+    /* Archivo's width axis is the brand's voice */
+    --wdth-condensed: 87.5%;  /* labels, meta */
+    --wdth-normal:    100%;   /* body, UI */
+    --wdth-wide:      112.5%; /* buttons, logo, h2 on tablet+ */
+    --wdth-expanded:  125%;   /* display, h1 on desktop */
+    --display-wdth:   var(--wdth-normal);   /* grows with the viewport, see bottom */
+    --heading-wdth:   var(--wdth-normal);
+
+    --weight-regular:  400;
+    --weight-medium:   500;
+    --weight-semibold: 600;
+    --weight-bold:     700;
+    --weight-heavy:    800;
+
+    /* Type scale: classic steps (12 14 16 18 21 24 36 60 96), big sizes fluid */
+    --text-xs:      0.75rem;                                  /* 12  captions, legal */
+    --text-sm:      0.875rem;                                 /* 14  labels, chips, meta */
+    --text-base:    1rem;                                     /* 16  body */
+    --text-md:      1.125rem;                                 /* 18  lead */
+    --text-lg:      1.3125rem;                                /* 21  card titles */
+    --text-xl:      1.5rem;                                   /* 24  h3 */
+    --text-2xl:     clamp(1.75rem, 1.4rem + 1.5vw, 2.25rem);  /* 28-36   mobile menu, sub-heads */
+    --text-3xl:     clamp(2.125rem, 1.4rem + 3vw, 3.75rem);   /* 34-60   h2 */
+    --text-4xl:     clamp(2.5rem, 1.2rem + 5.4vw, 6rem);      /* 40-96   h1 */
+    --text-display: clamp(3rem, 1.1rem + 7.8vw, 7.5rem);      /* 48-120  one short statement per page */
+
+    --leading-display: 0.92;
+    --leading-heading: 1.02;
+    --leading-title:   1.22;
+    --leading-body:    1.6;
+    --leading-ui:      1.2;
+
+    --tracking-display: -0.04em;
+    --tracking-heading: -0.025em;
+    --tracking-title:   -0.012em;
+    --tracking-label:   0.01em;
+
+    /* ---- Spacing: 4px base, name = multiple of 4px (space-4 = 16px) ---- */
+    --space-1:  0.25rem;  /* 4 */
+    --space-2:  0.5rem;   /* 8 */
+    --space-3:  0.75rem;  /* 12 */
+    --space-4:  1rem;     /* 16 */
+    --space-5:  1.25rem;  /* 20 */
+    --space-6:  1.5rem;   /* 24 */
+    --space-8:  2rem;     /* 32 */
+    --space-10: 2.5rem;   /* 40 */
+    --space-12: 3rem;     /* 48 */
+    --space-16: 4rem;     /* 64 */
+    --space-20: 5rem;     /* 80 */
+    --space-24: 6rem;     /* 96 */
+    --space-32: 8rem;     /* 128 */
+
+    /* ---- Radius: chosen by role, never one radius for everything ---- */
+    --radius-xs:   4px;
+    --radius-sm:   8px;
+    --radius-md:   14px;
+    --radius-lg:   22px;
+    --radius-pill: 999px;
+    --radius-control: var(--radius-sm);  /* buttons, inputs, icon tiles */
+    --radius-card:    var(--radius-md);  /* cards, media frames */
+    --radius-panel:   var(--radius-lg);  /* contact form, large media */
+
+    /* ---- Motion ---- */
+    --dur-instant: 100ms;   /* press feedback */
+    --dur-fast:    160ms;   /* color, underline */
+    --dur-base:    240ms;   /* borders, backgrounds, small movement */
+    --dur-slow:    400ms;   /* menu panel */
+    --dur-hero:    1100ms;  /* the one page-load moment */
+    --ease-out:      cubic-bezier(.16, 1, .3, 1);
+    --ease-standard: cubic-bezier(.2, 0, 0, 1);
+    --ease-in-out:   cubic-bezier(.65, 0, .35, 1);
+
+    /* ---- Layering ---- */
+    --z-raised:    1;
+    --z-sticky-cta: 80;
+    --z-nav-panel: 90;
+    --z-header:    100;
+    --z-skip:      1000;
+
+    /* ---- Layout ---- */
+    --container:        76rem;                                 /* 1216px content width */
+    --container-wide:   90rem;                                 /* 1440px galleries */
+    --gutter:           clamp(1rem, 0.4rem + 2.6vw, 2.5rem);   /* 16-40 */
+    --measure:          62ch;                                  /* max line length */
+    --header-h:         4.5rem;                                /* 72 */
+    --section-y:        clamp(4.5rem, 2.6rem + 7vw, 9rem);     /* 72-144 */
+    --section-y-sm:     clamp(3rem, 2rem + 4vw, 5.5rem);       /* 48-88 */
+    --section-head-gap: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);   /* 40-72 */
+    --grid-gap:         clamp(1rem, 0.6rem + 1.4vw, 1.5rem);   /* 16-24 */
+
+    /* ---- Media ratios: the formats this studio actually ships ---- */
+    --ratio-thumbnail:   16 / 9;      /* YouTube thumbnail, 1280 x 720 */
+    --ratio-banner-safe: 1546 / 423;  /* YouTube banner safe area */
+    --ratio-site:        16 / 10;     /* website screenshot */
+    --ratio-og:          1200 / 630;  /* link preview image */
+    --ratio-square:      1 / 1;       /* logo, social post */
+
+    /* ---- 2. Semantic: light-dark(light value, dark value) ---- */
+    color-scheme: dark light;
+    --bg:                    light-dark(var(--ink-50),  var(--ink-950));
+    --bg-alt:                light-dark(var(--ink-100), var(--ink-925));
+    --surface:               light-dark(var(--white),   var(--ink-900));
+    --surface-hover:         light-dark(var(--ink-25),  var(--ink-875));
+    --surface-inverse:       light-dark(var(--ink-950), var(--ink-50));
+    --surface-inverse-hover: light-dark(var(--ink-800), var(--ink-200));
+    --frame-bg:              light-dark(var(--neutral-100), var(--neutral-850));
+    --text:          light-dark(var(--ink-950), var(--ink-50));
+    --text-muted:    light-dark(var(--ink-700), var(--ink-300));
+    --text-subtle:   light-dark(var(--ink-600), var(--ink-400));
+    --text-inverse:  light-dark(var(--ink-50),  var(--ink-950));
+    --line:          light-dark(rgb(14 15 40 / .10), rgb(245 245 249 / .10));
+    --line-strong:   light-dark(rgb(14 15 40 / .20), rgb(245 245 249 / .20));
+    --line-control:  var(--ink-500);       /* input/outline-button borders, 3:1+ */
+    --field-bg:      light-dark(var(--white), var(--ink-925));
+    --accent:         var(--marigold-500); /* fills only: buttons, active marks */
+    --accent-hover:   light-dark(var(--marigold-600), var(--marigold-400));
+    --accent-pressed: light-dark(var(--marigold-700), var(--marigold-600));
+    --accent-text:    light-dark(var(--marigold-800), var(--marigold-400)); /* accent as text on --bg/--surface */
+    --accent-surface: light-dark(var(--marigold-100), rgb(245 165 9 / .12));
+    --on-accent:      var(--ink-950);
+    --link-underline: light-dark(var(--marigold-700), var(--marigold-500));
+    --focus-ring:     light-dark(var(--ink-950), var(--marigold-400));
+    --danger:         light-dark(var(--red-700), var(--red-400));
+    --danger-surface: light-dark(var(--red-50), rgb(244 123 116 / .12));
+    --success:        light-dark(var(--green-700), var(--green-400));
+    --header-bg:      light-dark(rgb(245 245 249 / .88), rgb(14 15 40 / .86));
+    --scrim:          light-dark(rgb(14 15 40 / .35), rgb(5 6 20 / .6));
+
+    /* Shadows: one recipe, colours switch per theme */
+    --shadow-rim:  light-dark(transparent, rgb(255 255 255 / .05));
+    --shadow-soft: light-dark(rgb(14 15 40 / .05), rgb(4 4 16 / .5));
+    --shadow-deep: light-dark(rgb(14 15 40 / .22), rgb(4 4 16 / .8));
+    --shadow-1: inset 0 1px 0 var(--shadow-rim), 0 1px 2px var(--shadow-soft);
+    --shadow-2: inset 0 1px 0 var(--shadow-rim), 0 2px 4px var(--shadow-soft), 0 18px 40px -18px var(--shadow-deep);
+    --shadow-3: 0 4px 8px var(--shadow-soft), 0 28px 72px -24px var(--shadow-deep);
+  }
+
+  :root[data-theme="light"] { color-scheme: light; }
+  :root[data-theme="dark"]  { color-scheme: dark; }
+
+  /* Browsers without light-dark() (Safari before 17.5) get the brand's dark
+     theme. The toggle is hidden for them in components.css. */
+  @supports not (color: light-dark(#000, #fff)) {
+    :root, :root[data-theme] {
+      color-scheme: dark;
+      --bg: var(--ink-950);            --bg-alt: var(--ink-925);
+      --surface: var(--ink-900);       --surface-hover: var(--ink-875);
+      --surface-inverse: var(--ink-50); --surface-inverse-hover: var(--ink-200);
+      --frame-bg: var(--neutral-850);
+      --text: var(--ink-50);           --text-muted: var(--ink-300);
+      --text-subtle: var(--ink-400);   --text-inverse: var(--ink-950);
+      --line: rgb(245 245 249 / .10);  --line-strong: rgb(245 245 249 / .20);
+      --field-bg: var(--ink-925);
+      --accent-hover: var(--marigold-400); --accent-pressed: var(--marigold-600);
+      --accent-text: var(--marigold-400);  --accent-surface: rgb(245 165 9 / .12);
+      --link-underline: var(--marigold-500); --focus-ring: var(--marigold-400);
+      --danger: var(--red-400);        --danger-surface: rgb(244 123 116 / .12);
+      --success: var(--green-400);
+      --header-bg: rgb(14 15 40 / .86); --scrim: rgb(5 6 20 / .6);
+      --shadow-rim: rgb(255 255 255 / .05); --shadow-soft: rgb(4 4 16 / .5); --shadow-deep: rgb(4 4 16 / .8);
+    }
+  }
+
+  /* ---- Headlines widen with the viewport ---- */
+  @media (min-width: 48em) {
+    :root { --display-wdth: var(--wdth-wide); --heading-wdth: var(--wdth-wide); }
+  }
+  @media (min-width: 64em) {
+    :root { --display-wdth: var(--wdth-expanded); }
+  }
+}

@@ -1,0 +1,57 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components.css';
+import Seo from '../components/global/Seo.astro';
+import Header from '../components/global/Header.astro';
+import Footer from '../components/global/Footer.astro';
+import WhatsAppSticky from '../components/global/WhatsAppSticky.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  noindex?: boolean;
+  type?: 'website' | 'article';
+  whatsappText?: string;  // prefilled message for the sticky WhatsApp button
+}
+
+const { title, description, image, noindex, type, whatsappText } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Seo title={title} description={description} image={image} noindex={noindex} type={type} />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0e0f28" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f5f5f9" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/archivo-vd.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Theme: runs before first paint so there's no flash. Uses the visitor's
+         saved choice, otherwise their device setting. Header.astro handles the toggle. -->
+    <script is:inline>
+      (function () {
+        var theme = null;
+        try { theme = localStorage.getItem('vd-theme'); } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <WhatsAppSticky text={whatsappText} />
+  </body>
+</html>

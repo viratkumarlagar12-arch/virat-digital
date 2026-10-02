@@ -1,0 +1,26 @@
+---
+// Opening block for inner pages: the page's H1, a lead paragraph, and an
+// optional slot for actions.
+interface Props {
+  title: string;
+  lead?: string;
+}
+const { title, lead } = Astro.props;
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1>{title}</h1>
+    {lead && <p class="t-lead">{lead}</p>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .page-hero { padding-block: clamp(3rem, 1.5rem + 6vw, 6rem) var(--section-y-sm); }
+    .page-hero h1 { max-width: 16ch; }
+    .page-hero .t-lead { margin-top: var(--space-6); }
+    .page-hero :global(.cluster) { margin-top: var(--space-8); }
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/sections/PageHero.astro';
+import { site } from '../data/site';
+
+const updated = '2 October 2026';
+---
+
+<BaseLayout
+  title="Privacy | Virat Digital"
+  description="What Virat Digital collects when you get in touch, why, how long it's kept, and how to see, correct or delete it."
+>
+  <PageHero title="Privacy" lead="What I collect when you get in touch, why, and what you can ask me to do with it." />
+
+  <section class="section-sm">
+    <div class="container">
+      <div class="prose">
+        <p><em>Last updated {updated}.</em></p>
+
+        <h2>Who's responsible</h2>
+        <p>
+          Virat Digital is an independent studio run by one person. I'm responsible for the information
+          described here. You can reach me at <a href={`mailto:${site.email}`}>{site.email}</a>.
+        </p>
+
+        <h2>What I collect</h2>
+        <ul>
+          <li><strong>The contact form:</strong> your name, your email address and/or WhatsApp number, the service you're interested in, your project details and, if you choose, a timeline.</li>
+          <li><strong>WhatsApp, email and social messages:</strong> whatever you choose to send me there.</li>
+          <li><strong>Your theme choice:</strong> if you switch between light and dark, that choice is saved in your own browser. It never reaches me.</li>
+        </ul>
+        <p>This site doesn't use advertising or tracking cookies.</p>
+
+        <h2>Why I use it</h2>
+        <p>
+          Only to reply to you, prepare a quote, and, if we work together, run the project and keep the
+          records the law requires. I don't sell or share your details for marketing, and I won't add you
+          to a mailing list.
+        </p>
+
+        <h2>Where it's stored</h2>
+        <p>
+          Form messages are delivered through the site's hosting provider and arrive in my email inbox.
+          WhatsApp messages stay in WhatsApp. These providers process the data on my behalf.
+        </p>
+
+        <h2>How long it's kept</h2>
+        <p>
+          Enquiries are kept only as long as they're needed to reply and follow up. If you become a client,
+          project details are kept for the project and for as long as tax and accounting rules require.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>
+          You can ask to see the information I hold about you, have it corrected, or have it deleted, and
+          you can withdraw your consent at any time. Email <a href={`mailto:${site.email}`}>{site.email}</a>
+          and I'll reply within 30 days. This includes any complaint about how your data has been handled.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

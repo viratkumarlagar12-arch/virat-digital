@@ -1,0 +1,39 @@
+---
+import Icon from '../ui/Icon.astro';
+import { whatsappUrl } from '../../data/site';
+
+interface Props {
+  text?: string;
+}
+const { text = "Hi Virat Digital, I'd like to talk about a project." } = Astro.props;
+---
+
+<a class="btn btn-secondary wa-sticky" href={whatsappUrl(text)} target="_blank" rel="noopener noreferrer">
+  <Icon name="whatsapp" /> WhatsApp
+</a>
+
+<script>
+  // Phones only (CSS hides it from 48em). Shown once the visitor has scrolled
+  // past the first screen; hidden while the contact form or footer is on
+  // screen, where WhatsApp is already offered.
+  const button = document.querySelector<HTMLElement>('.wa-sticky');
+  const blockers = document.querySelectorAll('[data-contact], .site-footer');
+  let blocked = 0;
+
+  const update = () => {
+    const past = window.scrollY > window.innerHeight * 0.6;
+    button?.classList.toggle('is-shown', past && blocked === 0);
+  };
+
+  if (button && 'IntersectionObserver' in window) {
+    const seen = new Set<Element>();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => (entry.isIntersecting ? seen.add(entry.target) : seen.delete(entry.target)));
+      blocked = seen.size;
+      update();
+    });
+    blockers.forEach((el) => observer.observe(el));
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+</script>
