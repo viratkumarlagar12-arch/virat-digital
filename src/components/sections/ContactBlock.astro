@@ -5,17 +5,15 @@ import { site, commitments, whatsappUrl } from '../../data/site';
 
 interface Props {
   title?: string;
-  lead?: string;
+  lead?: string;          // defaults to the reply promise when there's a title
   service?: string;       // slug to preselect in the form
   whatsappText?: string;
+  flush?: boolean;        // no top padding, when it directly follows a page hero
 }
 
-const {
-  title,
-  lead = `Share a few details and I’ll reply personally within ${commitments.replyHours} hours, with next steps or a few questions.`,
-  service,
-  whatsappText = "Hi Virat Digital, I'd like to talk about a project.",
-} = Astro.props;
+const { title, service, flush = false, whatsappText = "Hi Virat Digital, I'd like to talk about a project." } = Astro.props;
+const lead = Astro.props.lead ?? (title ? `Share a few details and I’ll reply personally within ${commitments.replyHours} hours, with next steps or a few questions.` : undefined);
+const hasHead = Boolean(title || lead);
 
 const channels: { icon: IconName; label: string; value: string; href: string; external?: boolean }[] = [
   { icon: 'whatsapp', label: 'WhatsApp', value: site.whatsapp.display, href: whatsappUrl(whatsappText), external: true },
@@ -24,26 +22,31 @@ const channels: { icon: IconName; label: string; value: string; href: string; ex
 ];
 ---
 
-<section class="section contact-block" id="contact" data-contact>
-  <div class="container contact-layout">
-    <div class="contact-head">
-      {title && <h2>{title}</h2>}
-      <p class="t-lead">{lead}</p>
-    </div>
+<section class:list={['section contact-block', { 'is-flush': flush }]} id="contact" data-contact>
+  <div class:list={['container contact-layout', { 'no-head': !hasHead }]}>
+    {hasHead && (
+      <div class="contact-head">
+        {title && <h2>{title}</h2>}
+        {lead && <p class="t-lead">{lead}</p>}
+      </div>
+    )}
 
     <ContactForm service={service} />
 
-    <ul class="contact-list" aria-label="Other ways to reach me">
-      {channels.map((c) => (
-        <li>
-          <span class="contact-icon"><Icon name={c.icon} /></span>
-          <div>
-            <span class="contact-label">{c.label}</span>
-            <a class="contact-value" href={c.href} {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{c.value}</a>
-          </div>
-        </li>
-      ))}
-    </ul>
+    <div class="contact-channels">
+      <p class="contact-channels-intro">Prefer to talk first? Message me on WhatsApp, or use any of these.</p>
+      <ul class="contact-list" aria-label="Other ways to reach me">
+        {channels.map((c) => (
+          <li>
+            <span class="contact-icon"><Icon name={c.icon} /></span>
+            <div>
+              <span class="contact-label">{c.label}</span>
+              <a class="contact-value" href={c.href} {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{c.value}</a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -55,9 +58,11 @@ const channels: { icon: IconName; label: string; value: string; href: string; ex
       display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-10);
       grid-template-areas: "head" "form" "channels";
     }
+    .contact-layout.no-head { grid-template-areas: "form" "channels"; }
     .contact-head { grid-area: head; }
     .contact-layout > :global(.contact-form) { grid-area: form; }
-    .contact-list { grid-area: channels; }
+    .contact-channels { grid-area: channels; }
+    .contact-block.is-flush { padding-top: 0; }
     @media (min-width: 64em) {
       .contact-layout {
         grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
@@ -65,9 +70,10 @@ const channels: { icon: IconName; label: string; value: string; href: string; ex
         grid-template-rows: auto 1fr;
         column-gap: var(--space-16);
       }
+      .contact-layout.no-head { grid-template-areas: "channels form"; grid-template-rows: auto; }
     }
     .contact-head h2 { margin-bottom: var(--space-5); }
-    .contact-head .t-lead:only-child { margin-top: 0; }
+    .contact-channels-intro { margin-bottom: var(--space-6); max-width: 36ch; color: var(--text); }
 
     .contact-list { display: grid; gap: var(--space-4); align-content: start; }
     .contact-list li { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }

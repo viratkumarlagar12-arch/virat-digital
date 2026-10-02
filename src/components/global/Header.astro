@@ -18,6 +18,8 @@ const current = (href: string) => (isCurrent(href, path) ? 'page' : undefined);
         <Icon name="sun" class="icon-sun" />
         <Icon name="moon" class="icon-moon" />
       </button>
+      <!-- Without JavaScript the menu can't open, so this jumps to the footer's full navigation instead. -->
+      <a class="btn btn-outline btn-sm nav-fallback" href="#footer-nav">Menu</a>
       <button class="icon-btn nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>

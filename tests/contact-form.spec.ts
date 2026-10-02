@@ -44,6 +44,17 @@ test('rejects a malformed email', async ({ page }) => {
   await expect(form(page).getByText('That email address looks incomplete.')).toBeVisible();
 });
 
+test('a WhatsApp number that is too short is called out as such', async ({ page }) => {
+  await page.goto('/contact/');
+  await page.getByLabel('Name').fill('Asha');
+  await page.getByLabel('WhatsApp').fill('98765');
+  await page.getByLabel('Project details').fill('I need a logo for my bakery.');
+  await form(page).getByRole('button', { name: 'Send project details' }).click();
+  await expect(form(page).getByText('That WhatsApp number looks too short.')).toBeVisible();
+  await expect(page.getByLabel('WhatsApp')).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.getByLabel('Email')).not.toHaveAttribute('aria-invalid', 'true');
+});
+
 test('a WhatsApp number alone is enough to reply to, and a sent form says so', async ({ page }) => {
   const bodies = await stubSubmit(page, 200);
   await page.goto('/contact/');

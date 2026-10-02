@@ -1,12 +1,174 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/sections/PageHero.astro';
+import Media from '../components/ui/Media.astro';
+
+// A living reference: everything below is rendered with the real tokens and
+// components, so it can't drift from the site. Not linked, not indexed.
+const colourPairs = [
+  { name: 'Text on background', fg: '--text', bg: '--bg' },
+  { name: 'Muted text on background', fg: '--text-muted', bg: '--bg' },
+  { name: 'Subtle text on background', fg: '--text-subtle', bg: '--bg' },
+  { name: 'Text on surface', fg: '--text', bg: '--surface' },
+  { name: 'Subtle text on surface', fg: '--text-subtle', bg: '--surface' },
+  { name: 'Accent text on background', fg: '--accent-text', bg: '--bg' },
+  { name: 'On accent (primary button)', fg: '--on-accent', bg: '--accent' },
+  { name: 'Danger on background', fg: '--danger', bg: '--bg' },
+];
+const typeRoles = [
+  { cls: 't-display', label: 'Display', note: '48–120px, 800, widens to 125%' },
+  { cls: 't-h1', label: 'Heading 1', note: '40–96px, 800' },
+  { cls: 't-h2', label: 'Heading 2', note: '34–60px, 700, 112.5% from tablets' },
+  { cls: 't-h3', label: 'Heading 3', note: '24px, 600' },
+  { cls: 't-title', label: 'Title', note: '21px, 600' },
+  { cls: 't-lead', label: 'Lead paragraph, for the line under a heading.', note: '18px, 400' },
+  { cls: '', label: 'Body text, for reading. Lines stay under about 62 characters.', note: '16px, 400' },
+  { cls: 't-label', label: 'Label', note: '14px, 600, 87.5% width' },
+  { cls: 't-caption', label: 'Caption', note: '12px, 400' },
+];
+const formats = [
+  { format: 'thumbnail', word: 'Thumbnail', note: '16:9, YouTube thumbnail' },
+  { format: 'banner', word: 'Banner', note: 'YouTube banner safe area' },
+  { format: 'site', word: 'Website', note: '16:10, website screenshot' },
+  { format: 'square', word: 'Logo', note: '1:1, logo or social post' },
+] as const;
+const rules = [
+  ['Semantic tokens only', 'Components use --text, --surface, --accent and friends, never primitives or hex values. Each is defined once with light-dark(), which is what makes both themes work.'],
+  ['One primary per view', 'Marigold fills mean “the thing to do”. Supporting actions use outline or ghost buttons.'],
+  ['Numbers mean order', 'Use .steps only for real sequences. Everything else is a feature list, rows or cards, without numbers.'],
+  ['Sentence case, no labels above headings', 'Headings stand on their own. No all-caps eyebrows, no decorative dots.'],
+  ['Motion answers the visitor', 'Hover, press and open states. The home headline widening on laptops is the only thing that moves on its own.'],
+  ['Nothing invented', 'Every project is labelled concept, self-initiated or client. Results and testimonials appear only for real client work.'],
+];
 ---
 
 <BaseLayout
   title="Style guide | Virat Digital"
-  description="The Ink and Marigold design system behind the Virat Digital website: tokens, type, components and rules."
+  description="The Ink and Marigold design system behind the Virat Digital website: colour, type, components and the rules for new work."
   noindex
 >
-  <PageHero title="Style guide" />
+  <PageHero title="Style guide" lead="Ink & Marigold, the design system behind this site. Everything here is rendered with the real tokens and components." />
+
+  <section class="section-sm">
+    <div class="container split">
+      <div class="section-head"><h2>Colour</h2><p>Each pair shown in both themes, with its contrast ratio. Body text needs 4.5:1.</p></div>
+      <div class="sg-themes">
+        {(['light', 'dark'] as const).map((scheme) => (
+          <div class="sg-theme" style={`color-scheme: ${scheme}`}>
+            <h3 class="t-title">{scheme === 'light' ? 'Light' : 'Dark'}</h3>
+            <ul class="sg-pairs">
+              {colourPairs.map((p) => (
+                <li class="sg-pair" style={`color: var(${p.fg}); background: var(${p.bg})`} data-contrast>
+                  <span>{p.name}</span>
+                  <span class="sg-ratio" data-ratio></span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm">
+    <div class="container split">
+      <div class="section-head"><h2>Type</h2><p>One family, Archivo, used across its width axis: wide for display, normal for reading, narrower for labels.</p></div>
+      <ul class="sg-type">
+        {typeRoles.map((r) => (
+          <li><p class={r.cls}>{r.label}</p><p class="t-caption">{r.note}</p></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-sm">
+    <div class="container split">
+      <div class="section-head"><h2>Buttons</h2><p>Labels say exactly what happens. Every size is at least 44px tall on touch screens.</p></div>
+      <div class="stack">
+        <div class="cluster">
+          <a class="btn btn-primary" href="#top">Primary</a>
+          <a class="btn btn-secondary" href="#top">Secondary</a>
+          <a class="btn btn-outline" href="#top">Outline</a>
+          <a class="btn btn-ghost" href="#top">Ghost</a>
+        </div>
+        <div class="cluster">
+          <a class="btn btn-primary btn-lg" href="#top">Large</a>
+          <a class="btn btn-primary btn-sm" href="#top">Small</a>
+          <button class="btn btn-primary" type="button" disabled>Disabled</button>
+          <a class="link-action" href="#top">Text action</a>
+        </div>
+        <div class="cluster">
+          <span class="badge">Concept</span>
+          <span class="badge badge-accent">Badge</span>
+          <span class="chip">Chip</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm">
+    <div class="container split">
+      <div class="section-head"><h2>Media frames</h2><p>Work is shown at the ratio it ships in. Until a real image exists, the word stands in.</p></div>
+      <ul class="sg-formats">
+        {formats.map((f) => (
+          <li><Media format={f.format} word={f.word} framed /><p class="t-caption">{f.note}</p></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-sm">
+    <div class="container split">
+      <div class="section-head"><h2>Form fields</h2><p>16px text so phones don’t zoom in. Errors say what to fix.</p></div>
+      <div class="sg-fields">
+        <div class="field"><label for="sg-a">Name</label><input id="sg-a" type="text" /></div>
+        <div class="field has-error">
+          <label for="sg-b">Email</label>
+          <input id="sg-b" type="email" value="asha@example" aria-invalid="true" aria-describedby="sg-b-error" />
+          <p class="field-error" id="sg-b-error">That email address looks incomplete.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm">
+    <div class="container split">
+      <div class="section-head"><h2>Rules for new work</h2></div>
+      <ul class="feature-list">
+        {rules.map(([title, text]) => <li class="feature"><h3>{title}</h3><p>{text}</p></li>)}
+      </ul>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  @layer sections {
+    .sg-themes { display: grid; gap: var(--grid-gap); }
+    @media (min-width: 48em) { .sg-themes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .sg-theme { padding: var(--space-5); border: 1px solid var(--line-strong); border-radius: var(--radius-card); background: var(--bg); color: var(--text); }
+    .sg-theme h3 { margin-bottom: var(--space-4); }
+    .sg-pairs { display: grid; gap: var(--space-2); }
+    .sg-pair { display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-control); font-size: var(--text-sm); }
+    .sg-ratio { font-variant-numeric: tabular-nums; font-weight: var(--weight-semibold); white-space: nowrap; }
+    .sg-type { display: grid; gap: var(--space-6); }
+    .sg-type .t-caption { margin-top: var(--space-1); }
+    .sg-type .t-display, .sg-type .t-h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sg-formats { display: grid; gap: var(--grid-gap); grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; }
+    .sg-formats .t-caption { margin-top: var(--space-2); }
+    .sg-fields { display: grid; gap: var(--space-5); max-width: 28rem; }
+  }
+</style>
+
+<script>
+  // Contrast ratios, computed from the colours actually rendered.
+  const channel = (c: number) => { const s = c / 255; return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; };
+  const parse = (rgb: string) => (rgb.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+  const luminance = ([r, g, b]: number[]) => 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+  document.querySelectorAll<HTMLElement>('[data-contrast]').forEach((el) => {
+    const style = getComputedStyle(el);
+    const [a, b] = [luminance(parse(style.color)), luminance(parse(style.backgroundColor))];
+    const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    const slot = el.querySelector('[data-ratio]');
+    if (slot) slot.textContent = `${ratio.toFixed(1)}:1 ${ratio >= 4.5 ? 'AA' : 'below AA'}`;
+  });
+</script>

@@ -1,6 +1,6 @@
 ---
 import { getServices } from '../../lib/content';
-import { commitments } from '../../data/site';
+import { site, commitments } from '../../data/site';
 
 interface Props {
   service?: string; // slug to preselect
@@ -21,6 +21,7 @@ const services = await getServices();
   netlify-honeypot="bot-field"
   novalidate
   data-reply-hours={commitments.replyHours}
+  data-whatsapp={site.whatsapp.number}
 >
   <input type="hidden" name="form-name" value="contact" />
   <p hidden><label>Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
@@ -99,13 +100,12 @@ const services = await getServices();
 </style>
 
 <script>
-  const WHATSAPP = '918210618353';
-
   document.querySelectorAll<HTMLFormElement>('form[name="contact"]').forEach((form) => {
     const status = form.querySelector<HTMLElement>('.form-status')!;
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     const el = (name: string) => form.elements.namedItem(name) as HTMLInputElement;
     const replyHours = form.dataset.replyHours;
+    const whatsappNumber = form.dataset.whatsapp;
 
     // /contact/?service=websites preselects that service.
     const fromUrl = new URLSearchParams(location.search).get('service');
@@ -129,12 +129,16 @@ const services = await getServices();
       const whatsapp = el('whatsapp');
       const message = el('message');
       const emailValue = email.value.trim();
-      const hasWhatsapp = whatsapp.value.replace(/\D/g, '').length >= 7;
+      const whatsappDigits = whatsapp.value.replace(/\D/g, '').length;
+      const hasWhatsapp = whatsappDigits >= 7;
 
       let ok = setError([name], 'cf-name-error', name.value.trim() ? '' : 'Please enter your name.');
       let replyError = '';
       let replyInputs = [email, whatsapp];
-      if (!emailValue && !hasWhatsapp) replyError = 'Add an email address or a WhatsApp number so I can reply.';
+      if (!emailValue && whatsappDigits > 0 && !hasWhatsapp) {
+        replyError = 'That WhatsApp number looks too short.';
+        replyInputs = [whatsapp];
+      } else if (!emailValue && !hasWhatsapp) replyError = 'Add an email address or a WhatsApp number so I can reply.';
       else if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailValue)) {
         replyError = 'That email address looks incomplete.';
         replyInputs = [email];
@@ -147,7 +151,7 @@ const services = await getServices();
 
     function whatsappLink() {
       const text = `Hi Virat Digital, I'm ${el('name').value.trim()}. ${el('message').value.trim()}`;
-      return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+      return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
     }
 
     form.addEventListener('submit', async (e) => {

@@ -73,7 +73,8 @@
 
   /* Sizes */
   .btn-sm { --btn-height: 2.25rem; --btn-px: var(--space-4); --btn-font-size: var(--text-sm); }
-  .btn-lg { --btn-height: 3.5rem;  --btn-px: var(--space-8); --btn-font-size: var(--text-md); }
+  .btn-lg { --btn-height: 3.5rem;  --btn-px: var(--space-6); --btn-font-size: var(--text-base); }
+  @media (min-width: 40em) { .btn-lg { --btn-px: var(--space-8); --btn-font-size: var(--text-md); } }
   .btn-block { width: 100%; }
   @media (pointer: coarse) { .btn-sm { --btn-height: 2.75rem; } }
 
@@ -307,6 +308,12 @@
   :root[data-theme="light"] .theme-toggle .icon-sun  { display: none; }
   :root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
 
+  /* No JavaScript (the theme script never set data-theme): the menu button
+     would do nothing, so swap it for a link to the footer navigation. */
+  .nav-fallback { display: none; }
+  :root:not([data-theme]) .nav-toggle { display: none; }
+  :root:not([data-theme]) .nav-fallback { display: inline-flex; }
+
   .nav-toggle { gap: 5px; place-content: center; }
   .nav-toggle span {
     display: block; width: 18px; height: 2px; border-radius: 2px;
@@ -371,7 +378,7 @@
     .nav-actions .btn { --btn-height: 2.25rem; --btn-font-size: var(--text-sm); --btn-px: var(--space-4); width: auto; }
     .nav-actions .nav-wa { display: none; }
     .header-actions { order: 2; margin-left: var(--space-2); }
-    .nav-toggle { display: none; }
+    .nav-toggle, :root:not([data-theme]) .nav-fallback { display: none; }
   }
 
   /* 6. Form fields & callout --------------------------------------- */
@@ -473,6 +480,7 @@
     letter-spacing: var(--tracking-label); line-height: var(--leading-ui);
   }
   .footer-nav li + li { margin-top: var(--space-2); }
+  .footer-nav > :last-child { grid-column: 1 / -1; }   /* phones: room for the number and email */
   .footer-nav a { color: var(--text-muted); font-size: 0.9375rem; text-decoration-color: transparent; overflow-wrap: anywhere; }
   .footer-nav a:hover { color: var(--text); text-decoration-color: var(--link-underline); }
   .footer-bottom {
@@ -485,6 +493,7 @@
   @media (min-width: 48em) {
     .footer-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
     .footer-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .footer-nav > :last-child { grid-column: auto; }
   }
 
   /* Phones only: WhatsApp stays in reach once the hero has scrolled away,
