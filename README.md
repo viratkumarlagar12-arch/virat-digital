@@ -1,17 +1,23 @@
 # Virat Digital — Brand Website
 
-A premium, dark-first, single-page website for **Virat Digital** — an independent digital
-solutions brand covering graphic design, website development, AI automation and digital
-marketing. Plain HTML, CSS and JavaScript — no build step, no framework, no dependencies.
+A premium single-page website for **Virat Digital** — an independent digital solutions
+brand covering graphic design, website development, AI automation and digital marketing.
+Dark and light themes, built on a small token-based design system ("Ink & Marigold").
+Plain HTML, CSS and JavaScript — no build step, no framework, no dependencies.
 
 ## Files
 
 ```
 MyWebsite/
-├── index.html        # All page sections (hero, services, trust, process, work, about, cta, contact)
-├── css/styles.css     # Design tokens, dark visual system, layout, components, responsive rules
-├── js/main.js         # Scroll progress, nav, reveal animations, process timeline, form validation
-├── favicon.svg         # Minimal "V" mark favicon
+├── index.html          # All page sections (hero, services, trust, process, work, about, cta, contact)
+├── styleguide.html     # Living design system reference (not linked from the site, noindex)
+├── css/
+│   ├── tokens.css      # Design tokens: palette, both themes, type, spacing, radius, shadows, motion, layout
+│   ├── base.css        # Reset, type roles, links and focus, layout primitives (container, section, grid, split)
+│   ├── components.css  # Buttons, cards, chips, badges, media frame, header/nav, theme toggle, forms, steps, footer
+│   └── styles.css      # Page sections, composed from the three files above
+├── js/main.js          # Theme toggle, header state, mobile nav, current-section highlight, process rail, form validation
+├── favicon.svg         # Marigold "V" mark
 └── README.md
 ```
 
@@ -46,7 +52,26 @@ intentionally left as clearly-marked placeholders for you to fill in:
 
 Nothing else in the copy claims stats, clients or results that don't exist yet.
 
-## What changed in this polish pass
+## Change history
+
+### Design system pass (October 2026)
+
+- New token-based design system ("Ink & Marigold") split across `tokens.css`, `base.css`,
+  `components.css` and `styles.css`; every colour now comes from a token (previously 23 were
+  hard-coded).
+- Dark and light themes: follows the device setting, with a remembered manual toggle.
+- Archivo replaces Inter; headlines use its width axis.
+- Removed decorative chrome: all-caps eyebrows, glowing dots, non-sequence numbering, the
+  orbiting hero graphic, blur blobs, scroll progress bar, hero tilt, card cursor glow and
+  staggered fade-ins. The one remaining page-load animation is the hero headline widening.
+- Hero now ends with a service index linking to each service card.
+- Service links say where they go ("Start a design project") and preselect that service in
+  the contact form.
+- About section is text-led; headings and tags use sentence case.
+- Process steps keep full-strength text (inactive steps were dimmed below WCAG contrast).
+- Added `styleguide.html`.
+
+### Earlier polish pass
 
 This was an improvement pass on the existing design system, not a rebuild. Fixed:
 
@@ -65,23 +90,55 @@ This was an improvement pass on the existing design system, not a rebuild. Fixed
 | What | Where |
 | --- | --- |
 | Brand name / logo | `index.html` — search for `Virat` (nav, hero-adjacent, footer) |
-| Accent color | `css/styles.css` — `:root` block (`--accent`, `--accent-2`) |
-| Fonts | `index.html` Google Fonts `<link>`, and `--font` in `styles.css` |
+| Colours | `css/tokens.css` — primitives at the top, theme values in the semantic blocks |
+| Fonts | Google Fonts `<link>` in `index.html` and `styleguide.html`, and `--font-sans` in `tokens.css` |
 | Services & sub-items | `#services` section in `index.html` |
 | Trust signals | `#trust` section in `index.html` |
 | Process steps | `#process` section |
 | Contact form fields/options | `#contact` section |
 
-## Design system notes
+## Design system
 
-- **Dark-first**: near-black background (`--bg`), off-white text (`--text`), single electric
-  accent (`--accent`, indigo-blue) used sparingly for glow, borders and interactive states.
-- **8px spacing scale** via `--sp-1` … `--sp-8` custom properties.
-- **Motion**: scroll-reveal (staggered), a scroll-linked process timeline fill, subtle hero
-  parallax on pointer move, and a top scroll-progress bar — all disabled automatically for
-  users with `prefers-reduced-motion: reduce`.
-- **No stock imagery**: the hero visual, project "mockups" and about-section graphic are all
-  CSS/SVG — no generic stock photos.
+The full reference, with live components and contrast checks in both themes, is
+`styleguide.html`. Open it next to the site while you work. It isn't linked from the site
+and is marked `noindex`.
+
+**Direction: Ink & Marigold.** Deep indigo ink backgrounds, one marigold accent, and Archivo's
+width axis as the brand voice: headlines are set expanded and widen as the screen grows,
+body text stays at normal width.
+
+**Three token layers** (all in `css/tokens.css`):
+
+1. **Primitives** — `--ink-50 … --ink-950`, `--marigold-100 … --marigold-900`, status colours.
+   Raw values; components never use them directly.
+2. **Semantic** — role names such as `--bg`, `--surface`, `--text`, `--text-muted`, `--accent`,
+   `--accent-text`, `--line`, `--focus-ring`. These switch per theme.
+3. **Component** — local props at the top of each component (`--btn-bg`, `--card-pad` …).
+   Variants only swap these, so selector specificity stays flat.
+
+Scales: spacing `--space-1 … --space-32` (name × 4px), type `--text-xs … --text-display`,
+radius by role (`--radius-control`, `--radius-card`, `--radius-panel`, `--radius-pill`),
+shadows `--shadow-1 … 3`, motion `--dur-*` and `--ease-*`. Breakpoints are mobile-first
+`min-width` queries at 40em, 48em, 64em and 80em (listed at the top of `tokens.css`).
+
+**Themes.** Dark is the brand default. The site follows the visitor's device setting until
+they use the toggle; their choice is saved in `localStorage` under `vd-theme`. A small script
+in `<head>` applies it before first paint, so there's no flash. Without JavaScript the CSS still
+follows the device setting and the toggle is hidden.
+
+**Rules for new work**
+
+- Use semantic tokens in components, never primitives or hex values.
+- Adding a colour: add the primitive, then the semantic token in the dark block **and both**
+  light blocks of `tokens.css` (they must stay identical), then check `styleguide.html`.
+- One primary (marigold) button per view; supporting actions use outline or ghost buttons.
+- Numbers only on real sequences (`.steps`); everything else uses `.feature-list` or cards.
+- Sentence case everywhere; no all-caps labels above headings.
+- Motion answers the visitor (hover, press, open). The hero headline is the only page-load
+  animation, and `prefers-reduced-motion` turns it off.
+- Work cards: replace the typographic `.media-word` placeholder with an `<img>` inside `.media`
+  once real work exists. Add `.card-interactive` and a `.card-link` only when a card opens a
+  real case study.
 
 ## Contact form
 

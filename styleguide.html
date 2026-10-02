@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virat Digital Style Guide</title>
+  <!-- Internal reference: not linked from the site and kept out of search results. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="color-scheme" content="dark light" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+
+  <script>
+    (function () {
+      var theme = null;
+      try { theme = localStorage.getItem('vd-theme'); } catch (e) {}
+      if (theme !== 'light' && theme !== 'dark') {
+        theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <style>
+    /* Style-guide-only layout. Everything else on this page is the real site CSS. */
+    .guide-head { padding-block: clamp(3rem, 1.5rem + 6vw, 6rem) var(--section-y-sm); }
+    .guide-head .t-lead { margin-top: var(--space-6); }
+
+    .spec { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-6); padding-block: var(--space-12); border-top: 1px solid var(--line); }
+    .spec:first-of-type { border-top: 0; padding-top: 0; }
+    .spec-head p { margin-top: var(--space-2); color: var(--text-muted); font-size: var(--text-sm); max-width: 34ch; }
+    .spec-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-8); min-width: 0; }
+    .sub-label { margin-bottom: var(--space-3); }
+    @media (min-width: 64em) { .spec { grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: var(--space-12); } }
+
+    code { font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace; font-size: .8125rem; color: var(--text); }
+
+    .ramp { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); gap: var(--space-4) var(--space-3); }
+    @media (min-width: 64em) { .ramp { grid-template-columns: repeat(var(--cols, 7), minmax(0, 1fr)); } }
+    .swatch { display: grid; gap: var(--space-1); }
+    .swatch-chip { height: 3.25rem; margin-bottom: var(--space-1); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+    .swatch-name { color: var(--text); font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+    .swatch-hex { color: var(--text-subtle); font-size: var(--text-xs); }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--surface); }
+    .spec-table { width: 100%; min-width: 44rem; border-collapse: collapse; font-size: var(--text-sm); }
+    .spec-table.narrow { min-width: 28rem; }
+    .spec-table th, .spec-table td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+    .spec-table tr:last-child td { border-bottom: 0; }
+    .spec-table th { background: var(--bg-alt); color: var(--text); font-weight: var(--weight-semibold); font-stretch: var(--wdth-condensed); white-space: nowrap; }
+    .spec-table td { color: var(--text-muted); }
+    .cchip { display: inline-block; width: 1rem; height: 1rem; margin-right: var(--space-2); border: 1px solid var(--line-strong); border-radius: var(--radius-xs); vertical-align: -3px; }
+    .ratio { color: var(--text); font-variant-numeric: tabular-nums; font-weight: var(--weight-semibold); }
+    .ratio-fail { color: var(--danger); }
+
+    .axis { display: grid; gap: var(--space-4); padding: var(--space-6); overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--surface); }
+    .axis-word { color: var(--text); font-size: clamp(3.5rem, 1rem + 10vw, 8.5rem); font-weight: var(--weight-heavy); line-height: .9; letter-spacing: var(--tracking-display); white-space: nowrap; }
+    .axis-control { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); }
+    .axis-control input { flex: 1 1 14rem; accent-color: var(--accent); }
+    .axis-control output { min-width: 4.5ch; color: var(--text); font-variant-numeric: tabular-nums; font-weight: var(--weight-semibold); }
+
+    .type-rows { display: grid; grid-template-columns: minmax(0, 1fr); }
+    .type-row { display: grid; gap: var(--space-2); min-width: 0; padding-block: var(--space-6); border-bottom: 1px solid var(--line); }
+    .type-row:first-child { padding-top: 0; }
+    .type-row > :first-child { overflow-wrap: anywhere; }
+    .type-spec { color: var(--text-subtle); font-size: var(--text-sm); }
+
+    .space-rows { display: grid; gap: var(--space-2); }
+    .space-row { display: grid; grid-template-columns: 6.5rem 3rem 1fr; align-items: center; gap: var(--space-3); font-size: var(--text-sm); }
+    .space-row span:nth-child(2) { color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+    .space-bar { height: .75rem; border-radius: 2px; background: var(--accent); }
+
+    .ratios { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); align-items: end; gap: var(--space-4); }
+    .ratio-box { display: grid; place-items: center; max-width: 100%; padding: var(--space-2); border: 1.5px dashed var(--line-control); border-radius: var(--radius-sm); color: var(--text); font-size: var(--text-sm); font-weight: var(--weight-semibold); text-align: center; }
+    .ratio-box small { display: block; color: var(--text-subtle); font-weight: var(--weight-regular); }
+
+    .samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: var(--space-4); }
+    .sample { display: grid; align-content: end; gap: var(--space-1); min-height: 7rem; padding: var(--space-4); border: 1px solid var(--line-strong); background: var(--surface); font-size: var(--text-sm); }
+    .sample strong { color: var(--text); }
+    .sample span { color: var(--text-subtle); }
+
+    .motion-demo { max-width: 15ch; font-size: var(--text-3xl); }
+
+    .state-grid { min-width: 46rem; }
+    .state-grid th:first-child, .state-grid td:first-child { width: 6.5rem; }
+    .state-grid td { padding-block: var(--space-4); }
+    .demo-hover.btn  { background: var(--btn-bg-hover); color: var(--btn-fg-hover); border-color: var(--btn-border-hover); }
+    .demo-active.btn { background: var(--btn-bg-active); transform: translateY(1px); }
+    .demo-focus { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+    .field .demo-focus { outline-offset: 0; border-color: transparent; }
+
+    .form-panel { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); max-width: 40rem; padding: clamp(var(--space-6), 3vw, var(--space-10)); border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--surface); }
+
+    .mock-desktop { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); padding: var(--space-4) var(--space-6) var(--space-8); border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--bg); }
+    .mock-link { position: relative; padding: var(--space-2) 0; color: var(--text-muted); font-size: .9375rem; font-weight: var(--weight-medium); }
+    .mock-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+    .mock-link.is-hover, .mock-link.is-current { color: var(--text); }
+    .mock-link.is-hover::after, .mock-link.is-current::after { transform: scaleX(1); }
+    .mock-link small { position: absolute; top: 100%; left: 0; margin-top: var(--space-2); color: var(--text-subtle); font-size: var(--text-xs); white-space: nowrap; }
+    .phone { width: min(100%, 20rem); overflow: hidden; border: 1px solid var(--line-strong); border-radius: 1.75rem; background: var(--bg); box-shadow: var(--shadow-3); }
+    .phone-bar { display: flex; align-items: center; justify-content: space-between; height: 3.75rem; padding-inline: var(--space-4); border-bottom: 1px solid var(--line); }
+    .phone-panel { display: grid; gap: var(--space-6); padding: var(--space-2) var(--space-4) var(--space-6); }
+    .phone-link { display: block; padding: var(--space-3) 0; border-bottom: 1px solid var(--line); color: var(--text); font-size: 1.625rem; font-weight: var(--weight-bold); font-stretch: var(--wdth-wide); letter-spacing: var(--tracking-heading); line-height: 1.1; }
+    .phone-link.is-current { color: var(--accent-text); }
+
+    .rhythm { display: grid; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-card); font-size: var(--text-sm); }
+    .rhythm > div { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-inline: var(--space-5); }
+    .rhythm .gap { background: var(--accent-surface); color: var(--accent-text); font-weight: var(--weight-semibold); }
+    .rhythm .blk { min-height: 3.5rem; background: var(--surface); color: var(--text); }
+    .rhythm code { color: inherit; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a class="logo" href="#top" aria-label="Virat Digital style guide — top">
+        <span class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 5 12 18 19 5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="logo-text">Virat Digital</span>
+      </a>
+      <div class="header-actions">
+        <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </button>
+        <button class="icon-btn nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <nav class="nav" id="primaryNav" aria-label="Style guide sections">
+        <ul class="nav-list">
+          <li><a class="nav-link" href="#direction">Direction</a></li>
+          <li><a class="nav-link" href="#foundations">Foundations</a></li>
+          <li><a class="nav-link" href="#components">Components</a></li>
+          <li><a class="nav-link" href="#patterns">Patterns</a></li>
+          <li><a class="nav-link" href="#rules">Rules</a></li>
+        </ul>
+        <a class="btn btn-primary nav-cta" href="index.html">Back to the site</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="guide-head" id="top">
+      <div class="container">
+        <h1>Style guide</h1>
+        <p class="t-lead">The tokens and components behind the Virat Digital site. Build new sections from these instead of adding new colours, sizes or one-off styles. The palette and contrast tables are read from the live CSS, so they stay accurate when a token changes.</p>
+      </div>
+    </section>
+
+    <!-- ============ DIRECTION ============ -->
+    <section class="section section-alt" id="direction">
+      <div class="container">
+        <div class="section-head section-head-split">
+          <h2>Ink &amp; Marigold</h2>
+          <p>Virat means immense. The system takes that literally: headlines are set wide and large on Archivo's width axis, and everything around them stays quiet. Deep indigo ink is the ground. Marigold, the colour of festival garlands and of the thumbnails clients want clicked, marks what you can act on.</p>
+        </div>
+        <ul class="feature-list">
+          <li class="feature"><h3>Type is the visual</h3><p>Headlines run expanded at large sizes and widen as the screen grows. No glow blobs, orbits or stock art compete with them. The one animation on the site is the hero headline widening into place.</p></li>
+          <li class="feature"><h3>One accent, used for action</h3><p>Marigold fills primary buttons, the current nav item, active process steps and the closing call to action. It never decorates, so it always means "this is the thing to do".</p></li>
+          <li class="feature"><h3>Structure carries meaning</h3><p>Numbers appear only on the four-step process, because it is a sequence. No all-caps labels above headings, no glowing dots, no centred section heads.</p></li>
+          <li class="feature"><h3>Both themes, equal care</h3><p>Dark is the brand default; light follows the visitor's device setting or the toggle. Every text colour passes WCAG AA in both, as the table below shows.</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ FOUNDATIONS ============ -->
+    <section class="section" id="foundations">
+      <div class="container">
+        <div class="section-head section-head-split">
+          <h2>Foundations</h2>
+          <p>Three layers. Primitives hold raw values, semantic tokens name a role and switch per theme, and each component builds its own local props from the semantic layer only. All of it lives in <code>css/tokens.css</code>.</p>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Colour</h3><p>Ink is a neutral tinted toward indigo, so greys never look unconsidered. Marigold is the only accent hue.</p></div>
+          <div class="spec-body">
+            <noscript><p class="callout">Turn on JavaScript to see the palette and contrast tables. They are read from the live CSS.</p></noscript>
+            <div><p class="t-label sub-label">Ink</p><ul class="ramp" id="rampInk" style="--cols: 7"></ul></div>
+            <div><p class="t-label sub-label">Marigold</p><ul class="ramp" id="rampMarigold" style="--cols: 9"></ul></div>
+            <div><p class="t-label sub-label">Status</p><ul class="ramp" id="rampStatus" style="--cols: 9"></ul></div>
+            <div>
+              <p class="t-label sub-label">Semantic tokens, both themes</p>
+              <div class="table-wrap">
+                <table class="spec-table">
+                  <thead><tr><th>Token</th><th>Role</th><th>Dark</th><th>Contrast</th><th>Light</th><th>Contrast</th></tr></thead>
+                  <tbody id="semanticRows"></tbody>
+                </table>
+              </div>
+              <p class="t-caption" style="margin-top: var(--space-3)">Contrast is the worst case across page, band and card backgrounds. Text needs 4.5:1 (WCAG AA); borders and focus rings need 3:1. The accent row shows the button label on the fill. Marigold is never used as text on light backgrounds, so light mode uses the deeper <code>--accent-text</code>.</p>
+            </div>
+            <div>
+              <p class="t-label sub-label">Special pairings</p>
+              <div class="table-wrap">
+                <table class="spec-table narrow">
+                  <thead><tr><th>Pairing</th><th>Dark</th><th>Light</th></tr></thead>
+                  <tbody id="pairingRows"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Typography</h3><p>One family, Archivo, used across its width axis. Wide for display, normal for reading, semi-condensed for labels.</p></div>
+          <div class="spec-body">
+            <div class="axis">
+              <p class="axis-word" id="axisWord" style="font-stretch: 125%">Virat</p>
+              <div class="axis-control">
+                <label class="t-label" for="wdthRange">Width axis</label>
+                <input type="range" id="wdthRange" min="62" max="125" step="0.5" value="125" />
+                <output id="wdthOut" for="wdthRange">125%</output>
+              </div>
+            </div>
+            <div class="type-rows">
+              <div class="type-row"><p class="t-display">Let's build it.</p><p class="type-spec"><code>.t-display</code> 48 to 120px, weight 800, width 100 to 125%, line height 0.92. One short statement per page.</p></div>
+              <div class="type-row"><p class="t-h1">Digital experiences</p><p class="type-spec"><code>h1</code> 40 to 96px, weight 800, width 100 to 125%, line height 0.92. Hero only.</p></div>
+              <div class="type-row"><p class="t-h2">A simple, transparent process</p><p class="type-spec"><code>h2</code> 34 to 60px, weight 700, width 100 to 112.5%, line height 1.02. Section titles.</p></div>
+              <div class="type-row"><p class="t-h3">Website development</p><p class="type-spec"><code>h3</code> 24px, weight 600, width 100%, line height 1.22.</p></div>
+              <div class="type-row"><p class="t-title">Clear communication</p><p class="type-spec"><code>h4 / .t-title</code> 21px, weight 600. Card and list titles.</p></div>
+              <div class="type-row"><p class="t-lead">Share a few details about your project and I'll get back to you personally to talk through the best way forward.</p><p class="type-spec"><code>.t-lead</code> 18px, weight 400, line height 1.55, max 62 characters per line.</p></div>
+              <div class="type-row"><p>Every build works cleanly across devices and screen sizes. Current tools and techniques, not outdated templates.</p><p class="type-spec"><code>body</code> 16px, weight 400, line height 1.6.</p></div>
+              <div class="type-row"><p class="t-label">Graphic design</p><p class="type-spec"><code>.t-label</code> 14px, weight 600, width 87.5%. Sentence case, never all caps.</p></div>
+              <div class="type-row"><p class="t-caption">Tools: Figma, Illustrator</p><p class="type-spec"><code>.t-caption</code> 12px. Meta and legal text.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Spacing</h3><p>A 4px base. Each name is the multiple of 4px, so <code>--space-6</code> is 24px.</p></div>
+          <div class="spec-body">
+            <div class="space-rows">
+              <div class="space-row"><code>--space-1</code><span>4</span><span class="space-bar" style="width: var(--space-1)"></span></div>
+              <div class="space-row"><code>--space-2</code><span>8</span><span class="space-bar" style="width: var(--space-2)"></span></div>
+              <div class="space-row"><code>--space-3</code><span>12</span><span class="space-bar" style="width: var(--space-3)"></span></div>
+              <div class="space-row"><code>--space-4</code><span>16</span><span class="space-bar" style="width: var(--space-4)"></span></div>
+              <div class="space-row"><code>--space-5</code><span>20</span><span class="space-bar" style="width: var(--space-5)"></span></div>
+              <div class="space-row"><code>--space-6</code><span>24</span><span class="space-bar" style="width: var(--space-6)"></span></div>
+              <div class="space-row"><code>--space-8</code><span>32</span><span class="space-bar" style="width: var(--space-8)"></span></div>
+              <div class="space-row"><code>--space-10</code><span>40</span><span class="space-bar" style="width: var(--space-10)"></span></div>
+              <div class="space-row"><code>--space-12</code><span>48</span><span class="space-bar" style="width: var(--space-12)"></span></div>
+              <div class="space-row"><code>--space-16</code><span>64</span><span class="space-bar" style="width: var(--space-16)"></span></div>
+              <div class="space-row"><code>--space-20</code><span>80</span><span class="space-bar" style="width: var(--space-20)"></span></div>
+              <div class="space-row"><code>--space-24</code><span>96</span><span class="space-bar" style="width: var(--space-24)"></span></div>
+              <div class="space-row"><code>--space-32</code><span>128</span><span class="space-bar" style="width: var(--space-32)"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Layout and breakpoints</h3><p>Mobile-first. Layout values are fluid between phone and desktop, so there are few hard jumps.</p></div>
+          <div class="spec-body">
+            <div class="table-wrap">
+              <table class="spec-table narrow">
+                <thead><tr><th>Token or class</th><th>Value</th><th>Use</th></tr></thead>
+                <tbody>
+                  <tr><td><code>--container</code></td><td>1216px</td><td>Content width</td></tr>
+                  <tr><td><code>--gutter</code></td><td>16 to 40px</td><td>Side padding, never below 16px</td></tr>
+                  <tr><td><code>--section-y</code></td><td>72 to 144px</td><td>Space above and below each section</td></tr>
+                  <tr><td><code>--section-head-gap</code></td><td>40 to 72px</td><td>Section heading to its content</td></tr>
+                  <tr><td><code>--grid-gap</code></td><td>16 to 24px</td><td>Between cards</td></tr>
+                  <tr><td><code>--measure</code></td><td>62ch</td><td>Longest line of running text</td></tr>
+                  <tr><td><code>--header-h</code></td><td>72px</td><td>Sticky header</td></tr>
+                  <tr><td><code>.split</code></td><td>5 : 7 columns from lg</td><td>Heading column beside content; <code>.split-sticky</code> pins the heading</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-wrap">
+              <table class="spec-table narrow">
+                <thead><tr><th>Breakpoint</th><th>Min width</th><th>What changes</th></tr></thead>
+                <tbody>
+                  <tr><td>Base</td><td>0</td><td>One column, menu in a full-height panel, headlines at normal width</td></tr>
+                  <tr><td><code>sm</code></td><td>640px (40em)</td><td>Form fields and feature points go two-up</td></tr>
+                  <tr><td><code>md</code></td><td>768px (48em)</td><td>Card grids go two-up, headlines widen to 112.5%</td></tr>
+                  <tr><td><code>lg</code></td><td>1024px (64em)</td><td>Inline navigation, three-up work grid, split sections, headlines at 125%</td></tr>
+                  <tr><td><code>xl</code></td><td>1280px (80em)</td><td>Container reaches full width</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <p class="t-label sub-label">Media ratios: the formats the studio delivers</p>
+              <div class="ratios">
+                <div class="ratio-box" style="aspect-ratio: var(--ratio-thumbnail)">16 : 9<small>YouTube thumbnail, work cards</small></div>
+                <div class="ratio-box" style="aspect-ratio: var(--ratio-banner-safe)">Banner safe area<small>1546 x 423</small></div>
+                <div class="ratio-box" style="aspect-ratio: var(--ratio-og)">Link preview<small>1200 x 630</small></div>
+                <div class="ratio-box" style="aspect-ratio: var(--ratio-square); max-width: 9rem">1 : 1<small>Social post</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Radius and elevation</h3><p>Radius follows role, so a button, a card and a panel are told apart at a glance. Cards rest flat; shadows are only for things that lift or float.</p></div>
+          <div class="spec-body">
+            <div class="samples">
+              <div class="sample" style="border-radius: var(--radius-xs)"><strong>4px</strong><span>Small marks</span></div>
+              <div class="sample" style="border-radius: var(--radius-control)"><strong>8px control</strong><span>Buttons, inputs, tiles</span></div>
+              <div class="sample" style="border-radius: var(--radius-card)"><strong>14px card</strong><span>Cards</span></div>
+              <div class="sample" style="border-radius: var(--radius-panel)"><strong>22px panel</strong><span>Contact form, large media</span></div>
+              <div class="sample" style="border-radius: var(--radius-pill); min-height: 3rem; align-content: center; text-align: center"><strong>Pill</strong><span>Chips, badges</span></div>
+            </div>
+            <div class="samples">
+              <div class="sample" style="border-radius: var(--radius-card)"><strong>At rest</strong><span>Border only</span></div>
+              <div class="sample" style="border-radius: var(--radius-card); box-shadow: var(--shadow-1)"><strong>--shadow-1</strong><span>Pressed-in controls</span></div>
+              <div class="sample" style="border-radius: var(--radius-card); box-shadow: var(--shadow-2)"><strong>--shadow-2</strong><span>Hovered card, form panel</span></div>
+              <div class="sample" style="border-radius: var(--radius-card); box-shadow: var(--shadow-3)"><strong>--shadow-3</strong><span>Menu panel, overlays</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Motion</h3><p>Motion answers what a visitor does. The only thing that moves on its own is the hero headline, once.</p></div>
+          <div class="spec-body">
+            <div class="table-wrap">
+              <table class="spec-table narrow">
+                <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+                <tbody>
+                  <tr><td><code>--dur-instant</code></td><td>100ms</td><td>Button press</td></tr>
+                  <tr><td><code>--dur-fast</code></td><td>160ms</td><td>Text and underline colour</td></tr>
+                  <tr><td><code>--dur-base</code></td><td>240ms</td><td>Borders, backgrounds, nav underline</td></tr>
+                  <tr><td><code>--dur-slow</code></td><td>400ms</td><td>Mobile menu panel</td></tr>
+                  <tr><td><code>--dur-hero</code></td><td>1100ms</td><td>Headline widening on load</td></tr>
+                  <tr><td><code>--ease-out</code></td><td><code>cubic-bezier(.16, 1, .3, 1)</code></td><td>Everything entering or responding</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="t-h2 hero-title motion-demo" id="motionDemo">Move your brand forward.</p>
+            <div class="cluster">
+              <button class="btn btn-outline" type="button" id="replayMotion">Replay the headline</button>
+              <span class="t-caption">Turned off when the visitor asks for reduced motion.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COMPONENTS ============ -->
+    <section class="section section-alt" id="components">
+      <div class="container">
+        <div class="section-head section-head-split">
+          <h2>Components</h2>
+          <p>Every component below is the real one from <code>css/components.css</code>. Hover, tab through and switch themes to check the states. The forced-state rows show hover, press and keyboard focus without needing a mouse.</p>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Buttons</h3><p>One primary per view. Labels say exactly what happens. Every size is at least 44px tall on touch screens.</p></div>
+          <div class="spec-body">
+            <div class="table-wrap">
+              <table class="spec-table state-grid">
+                <thead><tr><th>State</th><th>Primary<br><span class="t-caption">Main action</span></th><th>Secondary<br><span class="t-caption">Inverse; on the band</span></th><th>Outline<br><span class="t-caption">Next to a primary</span></th><th>Ghost<br><span class="t-caption">Low emphasis</span></th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Rest</strong></td><td><a class="btn btn-primary" href="#components">Start a project</a></td><td><a class="btn btn-secondary" href="#components">Send details</a></td><td><a class="btn btn-outline" href="#components">Explore services</a></td><td><a class="btn btn-ghost" href="#components">See all work</a></td></tr>
+                  <tr><td><strong>Hover</strong></td><td><span class="btn btn-primary demo-hover">Start a project</span></td><td><span class="btn btn-secondary demo-hover">Send details</span></td><td><span class="btn btn-outline demo-hover">Explore services</span></td><td><span class="btn btn-ghost demo-hover">See all work</span></td></tr>
+                  <tr><td><strong>Pressed</strong></td><td><span class="btn btn-primary demo-active">Start a project</span></td><td><span class="btn btn-secondary demo-active">Send details</span></td><td><span class="btn btn-outline demo-active">Explore services</span></td><td><span class="btn btn-ghost demo-active">See all work</span></td></tr>
+                  <tr><td><strong>Focus</strong></td><td><span class="btn btn-primary demo-focus">Start a project</span></td><td><span class="btn btn-secondary demo-focus">Send details</span></td><td><span class="btn btn-outline demo-focus">Explore services</span></td><td><span class="btn btn-ghost demo-focus">See all work</span></td></tr>
+                  <tr><td><strong>Disabled</strong></td><td><button class="btn btn-primary" type="button" disabled>Start a project</button></td><td><button class="btn btn-secondary" type="button" disabled>Send details</button></td><td><button class="btn btn-outline" type="button" disabled>Explore services</button></td><td><button class="btn btn-ghost" type="button" disabled>See all work</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="cluster" style="--cluster-gap: var(--space-4)">
+              <a class="btn btn-primary btn-sm" href="#components">Small, 36px</a>
+              <a class="btn btn-primary" href="#components">Medium, 44px</a>
+              <a class="btn btn-primary btn-lg" href="#components">Large, 56px</a>
+            </div>
+            <div class="cluster" style="--cluster-gap: var(--space-6)">
+              <a class="link-action" href="#components">Start a design project</a>
+              <span>Body text with <a href="#components">an inline link</a> in it.</span>
+              <a class="icon-btn" href="#components" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="currentColor" stroke="none"/></svg></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Cards</h3><p>Service cards are fully clickable through their action link. Work cards use the 16:9 thumbnail frame, with the project type set large until real screenshots replace it. Set <code>--chars</code> to the word's letter count so it spans the frame.</p></div>
+          <div class="spec-body">
+            <div class="grid grid-2">
+              <article class="card card-interactive service-card">
+                <span class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
+                <h3>Graphic design</h3>
+                <p>Visual identity and creative assets that make your brand instantly recognizable.</p>
+                <p class="card-meta">For creators and small businesses that need a strong, consistent look.</p>
+                <ul class="chip-list" aria-label="Includes"><li class="chip">Logo design</li><li class="chip">Brand identity</li><li class="chip">YouTube thumbnail design</li></ul>
+                <div class="card-foot"><a class="link-action card-link" href="#components">Start a design project</a></div>
+              </article>
+              <article class="card card-interactive service-card">
+                <span class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></span>
+                <h3>AI automation</h3>
+                <p>Practical AI systems that remove repetitive work from your business.</p>
+                <p class="card-meta">For businesses that lose time to repetitive manual tasks.</p>
+                <ul class="chip-list" aria-label="Includes"><li class="chip">AI workflow automation</li><li class="chip">Content automation</li></ul>
+                <div class="card-foot"><a class="link-action card-link" href="#components">Start an automation project</a></div>
+              </article>
+            </div>
+            <div class="grid grid-3">
+              <article class="card card-flush">
+                <div class="media"><span class="badge">Concept</span><span class="media-word" style="--chars: 5" aria-hidden="true">Brand</span></div>
+                <div class="card-body">
+                  <p class="t-label">Graphic design</p>
+                  <h3 class="t-title">Brand identity concept</h3>
+                  <p>A concept exploration for a modern brand identity system.</p>
+                  <p class="t-caption card-foot">Tools: Figma, Illustrator</p>
+                </div>
+              </article>
+              <article class="card card-flush">
+                <div class="media"><span class="badge">Concept</span><span class="media-word" style="--chars: 9" aria-hidden="true">Thumbnail</span></div>
+                <div class="card-body">
+                  <p class="t-label">Graphic design</p>
+                  <h3 class="t-title">YouTube thumbnail system</h3>
+                  <p>A modular thumbnail template system designed for consistency.</p>
+                  <p class="t-caption card-foot">Tools: Photoshop, Canva</p>
+                </div>
+              </article>
+              <article class="card card-flush card-interactive">
+                <div class="media"><span class="badge badge-accent">Case study</span><span class="media-word" style="--chars: 8" aria-hidden="true">Workflow</span></div>
+                <div class="card-body">
+                  <p class="t-label">AI automation</p>
+                  <h3 class="t-title card-title"><a class="card-link" href="#components">Linked work card</a></h3>
+                  <p>Add <code>.card-interactive</code> and a <code>.card-link</code> only when the card opens a real case study.</p>
+                  <p class="t-caption card-foot">Tools: n8n, OpenAI API</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Chips, badges, tiles</h3><p>Chips list what a service includes and are not clickable. Badges flag status. Icon tiles sit at the top of service cards.</p></div>
+          <div class="spec-body">
+            <div class="cluster" style="--cluster-gap: var(--space-4)">
+              <ul class="chip-list"><li class="chip">SEO</li><li class="chip">Content strategy</li><li class="chip">YouTube growth strategy</li></ul>
+              <span class="badge">Concept</span>
+              <span class="badge badge-accent">New</span>
+              <span class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>
+              <span class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Form fields</h3><p>16px text so phones don't zoom in. Errors say what to fix. The phone field shows the keyboard focus state.</p></div>
+          <div class="spec-body">
+            <form class="form-panel" id="demoForm" novalidate>
+              <div class="field-row">
+                <div class="field">
+                  <label for="demoName">Name</label>
+                  <input type="text" id="demoName" autocomplete="off" value="Ananya Rao" />
+                </div>
+                <div class="field has-error">
+                  <label for="demoEmail">Email</label>
+                  <input type="email" id="demoEmail" autocomplete="off" value="ananya@" aria-invalid="true" aria-describedby="demoEmailError" />
+                  <p class="field-error" id="demoEmailError">Enter an email address like name@example.com.</p>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="demoService">Service</label>
+                  <select id="demoService"><option>Logo &amp; brand identity</option><option>Website development</option><option>AI automation</option></select>
+                </div>
+                <div class="field">
+                  <label for="demoPhone">WhatsApp / phone <span class="field-optional">(optional)</span></label>
+                  <input type="tel" id="demoPhone" class="demo-focus" autocomplete="off" placeholder="+91 98765 43210" />
+                </div>
+              </div>
+              <div class="field">
+                <label for="demoMessage">Project details</label>
+                <textarea id="demoMessage" rows="3" placeholder="What are you trying to build, improve or automate?"></textarea>
+              </div>
+              <p class="callout"><strong>Setup note:</strong> callouts use the accent surface for notices the visitor must read.</p>
+              <button class="btn btn-primary btn-block" type="submit">Start a project</button>
+              <p class="form-status" id="demoStatus" role="status"></p>
+            </form>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Steps and feature list</h3><p>Steps are for real sequences and keep their numbers; the rail fills as the visitor scrolls (<code>--steps-progress</code>, set by main.js). Unordered points use the feature list, which has no numbers.</p></div>
+          <div class="spec-body">
+            <ol class="steps" style="--step-bg: var(--bg-alt); --steps-progress: .42">
+              <li class="step is-active"><span class="step-marker" aria-hidden="true">01</span><h3>Discover</h3><p>Understand the project, audience and goals.</p></li>
+              <li class="step is-active"><span class="step-marker" aria-hidden="true">02</span><h3>Plan</h3><p>Define the direction, structure and requirements.</p></li>
+              <li class="step"><span class="step-marker" aria-hidden="true">03</span><h3>Create</h3><p>Design, develop and refine the solution.</p></li>
+            </ol>
+            <ul class="feature-list">
+              <li class="feature"><h3>Clear communication</h3><p>You always know what's happening and why.</p></li>
+              <li class="feature"><h3>Direct collaboration</h3><p>You work directly with me. No account managers, no hand-offs.</p></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PATTERNS ============ -->
+    <section class="section" id="patterns">
+      <div class="container">
+        <div class="section-head section-head-split">
+          <h2>Patterns</h2>
+          <p>How the pieces combine on the page: the header you're using right now, the section rhythm, and the closing band.</p>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Navigation</h3><p>The header at the top of this page is the real component. It turns solid once you scroll and underlines the section you're reading. Below 1024px the links move into a full-height panel set in the wide headline face.</p></div>
+          <div class="spec-body">
+            <div class="mock-desktop" aria-hidden="true">
+              <span class="mock-link">Services<small>Rest</small></span>
+              <span class="mock-link is-hover">Work<small>Hover</small></span>
+              <span class="mock-link is-current">Process<small>Current section</small></span>
+              <span class="mock-link">About</span>
+              <span class="btn btn-primary btn-sm">Start a project</span>
+            </div>
+            <div class="phone" aria-hidden="true">
+              <div class="phone-bar">
+                <span class="logo"><span class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5 12 18 19 5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+                <span class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+              </div>
+              <div class="phone-panel">
+                <div>
+                  <span class="phone-link">Services</span>
+                  <span class="phone-link is-current">Work</span>
+                  <span class="phone-link">Process</span>
+                  <span class="phone-link">About</span>
+                  <span class="phone-link">Contact</span>
+                </div>
+                <span class="btn btn-primary btn-lg btn-block">Start a project</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec">
+          <div class="spec-head"><h3>Section rhythm</h3><p>Every section uses the same three distances, so the page reads in an even rhythm and no section sets its own padding.</p></div>
+          <div class="spec-body">
+            <div class="rhythm" aria-hidden="true">
+              <div class="gap" style="height: calc(var(--section-y) / 2)"><span>Section top</span><code>--section-y</code></div>
+              <div class="blk"><span>Section heading, left-aligned</span><code>.section-head</code></div>
+              <div class="gap" style="height: calc(var(--section-head-gap) / 1.5)"><span>Heading to content</span><code>--section-head-gap</code></div>
+              <div class="blk"><span>Card grid</span><code>--grid-gap</code></div>
+              <div class="gap" style="height: calc(var(--section-y) / 2)"><span>Section bottom</span><code>--section-y</code></div>
+            </div>
+            <p class="t-caption">Shown at half scale. Alternate sections use <code>.section-alt</code> for a band of <code>--bg-alt</code> with hairlines above and below.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band-accent cta-band" id="bandDemo" aria-labelledby="ctaTitle">
+      <div class="container">
+        <h2 class="t-display" id="ctaTitle">Have an idea?<br />Let's build it.</h2>
+        <p>The closing band: <code>.band-accent</code> re-points the text tokens to ink, so anything placed inside stays legible.</p>
+        <a class="btn btn-secondary btn-lg" href="#rules">Start a project</a>
+      </div>
+    </section>
+
+    <!-- ============ RULES ============ -->
+    <section class="section" id="rules">
+      <div class="container split">
+        <div class="section-head">
+          <h2>Rules for new work</h2>
+        </div>
+        <ul class="feature-list">
+          <li class="feature"><h3>Semantic tokens only</h3><p>Components use <code>--text</code>, <code>--surface</code>, <code>--accent</code> and friends, never primitives or hex values. That is what makes both themes work.</p></li>
+          <li class="feature"><h3>New colour, both themes</h3><p>Add the primitive, then the semantic token in the dark block and both light blocks of <code>tokens.css</code>. Check this page's contrast table afterwards.</p></li>
+          <li class="feature"><h3>One primary per view</h3><p>Marigold fills mean "the thing to do". Supporting actions use outline or ghost buttons.</p></li>
+          <li class="feature"><h3>Numbers mean order</h3><p>Use <code>.steps</code> only for real sequences. Everything else is a feature list or cards, without numbers.</p></li>
+          <li class="feature"><h3>Sentence case, no labels above headings</h3><p>Headings stand on their own. No all-caps eyebrows, no decorative dots.</p></li>
+          <li class="feature"><h3>Motion answers the visitor</h3><p>Hover, press and open states only. The hero headline is the single page-load animation.</p></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>Virat Digital style guide. Internal reference, not linked from the site. <a href="index.html">Back to the site</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    'use strict';
+    var root = document.documentElement;
+
+    /* ---- Theme toggle (same storage key as the site) ---- */
+    var themeBtn = document.getElementById('themeToggle');
+    function applyTheme(theme) {
+      root.classList.add('theme-switching');
+      root.setAttribute('data-theme', theme);
+      void root.offsetWidth;
+      requestAnimationFrame(function () { root.classList.remove('theme-switching'); });
+      themeBtn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    }
+    applyTheme(root.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+    themeBtn.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      try { localStorage.setItem('vd-theme', next); } catch (e) {}
+      applyTheme(next);
+    });
+
+    /* ---- Header, menu, current section ---- */
+    var header = document.getElementById('siteHeader');
+    function onScroll() { header.classList.toggle('is-scrolled', window.scrollY > 8); }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    var toggle = document.getElementById('navToggle');
+    var nav = document.getElementById('primaryNav');
+    function setMenu(open, returnFocus) {
+      nav.classList.toggle('is-open', open);
+      header.classList.toggle('menu-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      document.body.style.overflow = open ? 'hidden' : '';
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('is-open'), false); });
+    nav.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false, false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav.classList.contains('is-open')) setMenu(false, true); });
+    document.addEventListener('focusin', function (e) { if (nav.classList.contains('is-open') && !header.contains(e.target)) setMenu(false, false); });
+    window.matchMedia('(min-width: 64em)').addEventListener('change', function (e) { if (e.matches) setMenu(false, false); });
+
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav-link'));
+    var linkFor = {};
+    links.forEach(function (a) { linkFor[a.getAttribute('href').slice(1)] = a; });
+    if ('IntersectionObserver' in window) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          links.forEach(function (a) { a.removeAttribute('aria-current'); });
+          if (linkFor[entry.target.id]) linkFor[entry.target.id].setAttribute('aria-current', 'true');
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      document.querySelectorAll('main section[id]').forEach(function (s) { spy.observe(s); });
+    }
+
+    /* ---- Width axis, motion replay, demo form ---- */
+    var range = document.getElementById('wdthRange');
+    range.addEventListener('input', function () {
+      document.getElementById('axisWord').style.fontStretch = range.value + '%';
+      document.getElementById('wdthOut').textContent = range.value + '%';
+    });
+    document.getElementById('replayMotion').addEventListener('click', function () {
+      var demo = document.getElementById('motionDemo');
+      demo.style.animation = 'none';
+      void demo.offsetWidth;
+      demo.style.animation = '';
+    });
+    document.getElementById('demoForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('demoStatus').textContent = 'Demo only: nothing was sent.';
+    });
+
+    /* ---- Palette and contrast, read from the live CSS ---- */
+    // Primitive names in tokens.css. Add a name here when you add a primitive.
+    var RAMPS = {
+      rampInk: ['950', '925', '900', '875', '800', '700', '600', '500', '400', '300', '200', '100', '50', '25'].map(function (s) { return '--ink-' + s; }),
+      rampMarigold: ['100', '200', '300', '400', '500', '600', '700', '800', '900'].map(function (s) { return '--marigold-' + s; }),
+      rampStatus: ['--red-50', '--red-400', '--red-700', '--green-400', '--green-700']
+    };
+    var GROUNDS = ['--bg', '--bg-alt', '--surface'];
+    var ROWS = [
+      ['--bg', 'Page background'], ['--bg-alt', 'Alternate section band'], ['--surface', 'Cards, form panel'], ['--surface-hover', 'Hovered card'],
+      ['--text', 'Headings, primary text', 'text'], ['--text-muted', 'Body copy', 'text'], ['--text-subtle', 'Meta, captions, placeholders', 'text'],
+      ['--accent', 'Primary button fill, active marks', 'fill'], ['--accent-text', 'Accent as text or icon', 'text'],
+      ['--line-control', 'Input and outline-button borders', 'ui'], ['--focus-ring', 'Keyboard focus outline', 'ui'],
+      ['--danger', 'Error messages', 'text'], ['--success', 'Success messages', 'text']
+    ];
+
+    var probe = document.createElement('span');
+    probe.hidden = true;
+    document.body.appendChild(probe);
+
+    function rgba(value) {   // any CSS colour string -> [r, g, b, a]
+      probe.style.color = '';
+      probe.style.color = value;
+      var parts = getComputedStyle(probe).color.match(/[\d.]+/g).map(Number);
+      return [parts[0], parts[1], parts[2], parts.length > 3 ? parts[3] : 1];
+    }
+    function over(top, bottom) { return [0, 1, 2].map(function (i) { return top[i] * top[3] + bottom[i] * (1 - top[3]); }).concat(1); }
+    function lum(c) {
+      var ch = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+    }
+    function contrast(fg, bg) {
+      var solidBg = bg[3] < 1 ? over(bg, [255, 255, 255, 1]) : bg;
+      var a = lum(over(fg, solidBg)), b = lum(solidBg);
+      return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    }
+    function hex(c) { return '#' + c.slice(0, 3).map(function (v) { return Math.round(v).toString(16).padStart(2, '0'); }).join(''); }
+
+    function readTheme(theme, el) {   // computed token values for a theme, read without repainting
+      var target = el || root;
+      var previous = root.getAttribute('data-theme');
+      root.classList.add('theme-switching');
+      root.setAttribute('data-theme', theme);
+      var cs = getComputedStyle(target);
+      var get = function (name) { return cs.getPropertyValue(name).trim(); };
+      var values = {};
+      ROWS.concat([['--on-accent'], ['--accent-hover'], ['--accent-pressed'], ['--accent-surface'], ['--danger-surface'], ['--field-bg']])
+        .forEach(function (r) { values[r[0]] = get(r[0]); });
+      values.background = getComputedStyle(target).backgroundColor;
+      root.setAttribute('data-theme', previous);
+      void root.offsetWidth;
+      requestAnimationFrame(function () { root.classList.remove('theme-switching'); });
+      return values;
+    }
+
+    function ratioCell(value, need) {
+      return '<span class="ratio' + (value < need ? ' ratio-fail' : '') + '">' + value.toFixed(1) + ':1</span>';
+    }
+
+    var rootStyle = getComputedStyle(root);
+    Object.keys(RAMPS).forEach(function (id) {
+      var short = id !== 'rampStatus';
+      document.getElementById(id).innerHTML = RAMPS[id].map(function (name) {
+        var value = rootStyle.getPropertyValue(name).trim();
+        var label = short ? name.replace(/^--[a-z]+-/, '') : name.slice(2);
+        return '<li class="swatch"><span class="swatch-chip" style="background:' + value + '"></span><span class="swatch-name">' + label + '</span><code class="swatch-hex">' + value + '</code></li>';
+      }).join('');
+    });
+
+    var themes = { dark: readTheme('dark'), light: readTheme('light') };
+    function check(t, name, kind) {
+      var fg = rgba(t[name]);
+      if (kind === 'fill') return ratioCell(contrast(rgba(t['--on-accent']), fg), 4.5);
+      var worst = Math.min.apply(null, GROUNDS.map(function (g) { return contrast(fg, rgba(t[g])); }));
+      return ratioCell(worst, kind === 'text' ? 4.5 : 3);
+    }
+    document.getElementById('semanticRows').innerHTML = ROWS.map(function (r) {
+      var cells = ['dark', 'light'].map(function (theme) {
+        var t = themes[theme], c = rgba(t[r[0]]);
+        return '<td><span class="cchip" style="background:' + t[r[0]] + '"></span><code>' + hex(c) + '</code></td><td>' +
+          (r[2] ? check(t, r[0], r[2]) : '<span class="t-caption">ground</span>') + '</td>';
+      }).join('');
+      return '<tr><td><code>' + r[0] + '</code></td><td>' + r[1] + '</td>' + cells + '</tr>';
+    }).join('');
+
+    var band = document.getElementById('bandDemo');
+    var bandThemes = { dark: readTheme('dark', band), light: readTheme('light', band) };
+    var PAIRS = [
+      ['Body text on the marigold band', function (t, b) { return contrast(rgba(b['--text-muted']), rgba(b.background)); }],
+      ['Heading on the marigold band', function (t, b) { return contrast(rgba(b['--text']), rgba(b.background)); }],
+      ['Label on hovered primary button', function (t) { return contrast(rgba(t['--on-accent']), rgba(t['--accent-hover'])); }],
+      ['Label on pressed primary button', function (t) { return contrast(rgba(t['--on-accent']), rgba(t['--accent-pressed'])); }],
+      ['Accent icon on its tile', function (t) { return contrast(rgba(t['--accent-text']), over(rgba(t['--accent-surface']), rgba(t['--surface']))); }],
+      ['Callout text', function (t) { return contrast(rgba(t['--text']), over(rgba(t['--accent-surface']), rgba(t['--surface']))); }],
+      ['Error text on an error field', function (t) { return contrast(rgba(t['--danger']), over(rgba(t['--danger-surface']), rgba(t['--field-bg']))); }]
+    ];
+    document.getElementById('pairingRows').innerHTML = PAIRS.map(function (p) {
+      var need = /icon/.test(p[0]) ? 3 : 4.5;
+      return '<tr><td>' + p[0] + '</td><td>' + ratioCell(p[1](themes.dark, bandThemes.dark), need) + '</td><td>' + ratioCell(p[1](themes.light, bandThemes.light), need) + '</td></tr>';
+    }).join('');
+  })();
+  </script>
+</body>
+</html>

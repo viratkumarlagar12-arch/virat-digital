@@ -1,180 +1,170 @@
 /* Virat Digital — site behaviour
-   - scroll progress bar
+   - theme toggle (follows the device until the visitor picks; the choice is remembered)
    - sticky header state
-   - animated mobile nav
-   - scroll-reveal animations (staggered)
-   - process timeline scroll-fill + active step
-   - hero visual pointer parallax
+   - mobile navigation
+   - current section highlighted in the nav
+   - process steps: rail fill and active steps
+   - service links preselect the contact form's service
    - contact form validation (front-end only; no backend wired up)
    - footer year
 */
 (function () {
   'use strict';
 
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  var THEME_KEY = 'vd-theme';                                      // same key as the <head> script
+  var THEME_COLORS = { dark: '#0e0f28', light: '#f5f5f9' };       // --ink-950, --ink-50
+  var lightQuery = window.matchMedia('(prefers-color-scheme: light)');
+  var desktopQuery = window.matchMedia('(min-width: 64em)');     // lg breakpoint in tokens.css
 
-  /* ---- Scroll progress bar ---- */
-  var progress = document.getElementById('scrollProgress');
-  function updateProgress() {
-    if (!progress) return;
-    var doc = document.documentElement;
-    var scrollable = doc.scrollHeight - doc.clientHeight;
-    var pct = scrollable > 0 ? (doc.scrollTop / scrollable) * 100 : 0;
-    progress.style.width = pct + '%';
+  /* ---- Theme ---- */
+  var themeToggle = document.getElementById('themeToggle');
+
+  function savedTheme() {
+    try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; }
   }
+
+  function applyTheme(theme) {
+    // Switch without transitions so text and backgrounds change together.
+    root.classList.add('theme-switching');
+    root.setAttribute('data-theme', theme);
+    void root.offsetWidth;
+    requestAnimationFrame(function () { root.classList.remove('theme-switching'); });
+
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
+      meta.setAttribute('content', THEME_COLORS[theme]);
+    });
+    if (themeToggle) {
+      themeToggle.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    }
+  }
+
+  applyTheme(root.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+      applyTheme(next);
+    });
+  }
+
+  // Keep following the device setting until the visitor picks a theme.
+  lightQuery.addEventListener('change', function (e) {
+    if (!savedTheme()) applyTheme(e.matches ? 'light' : 'dark');
+  });
 
   /* ---- Sticky header state ---- */
   var header = document.getElementById('siteHeader');
   function updateHeader() {
-    if (!header) return;
-    header.classList.toggle('is-scrolled', window.scrollY > 8);
+    if (header) header.classList.toggle('is-scrolled', window.scrollY > 8);
+  }
+
+  /* ---- Process steps ---- */
+  var steps = document.getElementById('processSteps');
+  var stepItems = steps ? Array.prototype.slice.call(steps.querySelectorAll('.step')) : [];
+
+  function updateProcess() {
+    if (!steps) return;
+    var line = window.innerHeight * 0.55;
+    var rect = steps.getBoundingClientRect();
+    var progress = Math.max(0, Math.min(1, (line - rect.top) / rect.height));
+    steps.style.setProperty('--steps-progress', progress.toFixed(3));
+    stepItems.forEach(function (step) {
+      step.classList.toggle('is-active', step.getBoundingClientRect().top < line);
+    });
   }
 
   var ticking = false;
-  function onScroll() {
+  window.addEventListener('scroll', function () {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(function () {
-      updateProgress();
       updateHeader();
-      updateProcessFill();
+      updateProcess();
       ticking = false;
     });
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  updateProgress();
+  }, { passive: true });
+  window.addEventListener('resize', updateProcess);
   updateHeader();
+  updateProcess();
 
   /* ---- Mobile navigation ---- */
   var toggle = document.getElementById('navToggle');
   var nav = document.getElementById('primaryNav');
 
-  function closeNav(returnFocus) {
+  function setMenu(open, returnFocus) {
     if (!nav || !toggle) return;
     var wasOpen = nav.classList.contains('is-open');
-    nav.classList.remove('is-open');
-    toggle.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-    if (returnFocus && wasOpen) toggle.focus();
+    nav.classList.toggle('is-open', open);
+    if (header) header.classList.toggle('menu-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (!open && wasOpen && returnFocus) toggle.focus();
   }
 
   if (toggle && nav) {
     toggle.addEventListener('click', function () {
-      var isOpen = nav.classList.toggle('is-open');
-      toggle.setAttribute('aria-expanded', String(isOpen));
-      document.body.style.overflow = isOpen ? 'hidden' : '';
+      setMenu(!nav.classList.contains('is-open'), false);
     });
 
     nav.addEventListener('click', function (e) {
-      if (e.target.closest('a')) closeNav(false);
+      if (e.target.closest('a')) setMenu(false, false);
     });
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeNav(true);
+      if (e.key === 'Escape' && nav.classList.contains('is-open')) setMenu(false, true);
     });
 
-    // Reset mobile menu state if the viewport grows back to desktop.
-    window.addEventListener('resize', function () {
-      if (window.innerWidth > 960) closeNav(false);
+    // Close the panel if keyboard focus moves past it into the page.
+    document.addEventListener('focusin', function (e) {
+      if (nav.classList.contains('is-open') && header && !header.contains(e.target)) setMenu(false, false);
     });
-  }
 
-  /* ---- Scroll-reveal (staggered) ---- */
-  var revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
-
-  // Stagger elements that share a parent container.
-  var groups = new Map();
-  revealEls.forEach(function (el) {
-    var parent = el.parentElement;
-    if (!groups.has(parent)) groups.set(parent, []);
-    groups.get(parent).push(el);
-  });
-  groups.forEach(function (els) {
-    els.forEach(function (el, i) {
-      el.style.transitionDelay = reduceMotion ? '0ms' : Math.min(i * 90, 360) + 'ms';
-    });
-  });
-
-  if ('IntersectionObserver' in window && !reduceMotion) {
-    var revealObserver = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            revealObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -8% 0px' }
-    );
-    revealEls.forEach(function (el) { revealObserver.observe(el); });
-  } else {
-    revealEls.forEach(function (el) { el.classList.add('is-visible'); });
-  }
-
-  /* ---- Process timeline ---- */
-  var track = document.getElementById('processTrack');
-  var fill = document.getElementById('processFill');
-  var steps = Array.prototype.slice.call(document.querySelectorAll('[data-step]'));
-
-  function updateProcessFill() {
-    if (!track || !fill) return;
-    var rect = track.getBoundingClientRect();
-    var viewportCenter = window.innerHeight * 0.55;
-    var progressed = viewportCenter - rect.top;
-    var pct = Math.max(0, Math.min(100, (progressed / rect.height) * 100));
-    fill.style.height = pct + '%';
-  }
-  updateProcessFill();
-
-  if (steps.length && 'IntersectionObserver' in window) {
-    var stepObserver = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          entry.target.classList.toggle('is-active', entry.isIntersecting);
-        });
-      },
-      { rootMargin: '-40% 0px -40% 0px', threshold: 0 }
-    );
-    steps.forEach(function (step) { stepObserver.observe(step); });
-  }
-
-  /* ---- Hero visual pointer parallax (desktop only) ---- */
-  var heroVisual = document.getElementById('heroVisual');
-  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-  if (heroVisual && canHover && !reduceMotion) {
-    heroVisual.addEventListener('mousemove', function (e) {
-      var rect = heroVisual.getBoundingClientRect();
-      var x = (e.clientX - rect.left) / rect.width - 0.5;
-      var y = (e.clientY - rect.top) / rect.height - 0.5;
-      heroVisual.style.transform =
-        'rotateY(' + (x * 8) + 'deg) rotateX(' + (y * -8) + 'deg)';
-    });
-    heroVisual.addEventListener('mouseleave', function () {
-      heroVisual.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    // Reset the mobile menu if the viewport grows to desktop.
+    desktopQuery.addEventListener('change', function (e) {
+      if (e.matches) setMenu(false, false);
     });
   }
 
-  /* ---- Service card glow follows cursor ---- */
-  if (canHover) {
-    document.querySelectorAll('.service-card').forEach(function (card) {
-      card.addEventListener('mousemove', function (e) {
-        var rect = card.getBoundingClientRect();
-        card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width) * 100 + '%');
-        card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height) * 100 + '%');
+  /* ---- Current section in the nav ---- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-link'));
+  var linkFor = {};
+  navLinks.forEach(function (link) { linkFor[link.getAttribute('href').slice(1)] = link; });
+
+  if ('IntersectionObserver' in window && navLinks.length) {
+    var sectionObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach(function (link) { link.removeAttribute('aria-current'); });
+        var link = linkFor[entry.target.id];
+        if (link) link.setAttribute('aria-current', 'true');
       });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('main section[id]').forEach(function (section) {
+      sectionObserver.observe(section);
     });
   }
 
   /* ---- Contact form ---- */
   var form = document.getElementById('contactForm');
   var note = document.getElementById('formNote');
+  var serviceSelect = document.getElementById('service');
+
+  // "Start a design project" etc. open the form with that service selected.
+  document.querySelectorAll('[data-service]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      if (serviceSelect) serviceSelect.value = link.getAttribute('data-service');
+    });
+  });
 
   function setError(input, message) {
     var field = input.closest('.field');
-    var slot = field && field.querySelector('.error');
-    field.classList.toggle('has-error', Boolean(message));
+    var slot = field && field.querySelector('.field-error');
+    if (field) field.classList.toggle('has-error', Boolean(message));
+    if (message) input.setAttribute('aria-invalid', 'true');
+    else input.removeAttribute('aria-invalid');
     if (slot) slot.textContent = message || '';
     return !message;
   }
@@ -201,7 +191,7 @@
       if (note) note.textContent = '';
 
       if (!validate()) {
-        var firstBad = form.querySelector('.has-error input, .has-error textarea');
+        var firstBad = form.querySelector('[aria-invalid="true"]');
         if (firstBad) firstBad.focus();
         return;
       }
