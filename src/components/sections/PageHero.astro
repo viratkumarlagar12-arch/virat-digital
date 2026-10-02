@@ -1,15 +1,23 @@
 ---
-// Opening block for inner pages: the page's H1, a lead paragraph, and an
-// optional slot for actions.
+// Opening block for inner pages: optional breadcrumb, the page's H1, a lead
+// paragraph, and an optional slot for actions.
 interface Props {
   title: string;
   lead?: string;
+  crumbs?: { label: string; href: string }[];  // ancestors only; the current page is the title
 }
-const { title, lead } = Astro.props;
+const { title, lead, crumbs } = Astro.props;
 ---
 
 <section class="page-hero">
   <div class="container">
+    {crumbs && (
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          {crumbs.map((c) => <li><a href={c.href}>{c.label}</a></li>)}
+        </ol>
+      </nav>
+    )}
     <h1>{title}</h1>
     {lead && <p class="t-lead">{lead}</p>}
     <slot />
@@ -22,5 +30,9 @@ const { title, lead } = Astro.props;
     .page-hero h1 { max-width: 16ch; }
     .page-hero .t-lead { margin-top: var(--space-6); }
     .page-hero :global(.cluster) { margin-top: var(--space-8); }
+    .breadcrumb { margin-bottom: var(--space-6); font-size: var(--text-sm); }
+    .breadcrumb ol { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .breadcrumb a { color: var(--text-muted); text-decoration-color: var(--line-strong); }
+    .breadcrumb a:hover { color: var(--text); text-decoration-color: var(--link-underline); }
   }
 </style>

@@ -1,11 +1,26 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/sections/PageHero.astro';
+import ServiceRows from '../../components/sections/ServiceRows.astro';
+import ProcessSteps from '../../components/sections/ProcessSteps.astro';
+import ContactBlock from '../../components/sections/ContactBlock.astro';
 ---
 
 <BaseLayout
   title="Services | Virat Digital"
-  description="Graphic design, YouTube design, websites, AI automation and digital marketing for creators and small businesses."
+  description="Graphic design, YouTube design, websites, AI automation and digital marketing for creators and small businesses, with a fixed quote up front."
 >
-  <PageHero title="Services" />
+  <PageHero
+    title="Services"
+    lead="Five things I do, for creators and small businesses. They work on their own, and better together: a brand that carries into your thumbnails, a website that brings in enquiries, and automation that handles them."
+  />
+
+  <section class="section-sm">
+    <div class="container">
+      <ServiceRows headingLevel={2} />
+    </div>
+  </section>
+
+  <ProcessSteps class="section-alt" />
+  <ContactBlock title="Not sure which you need?" lead="Describe what you’re trying to do and I’ll suggest where to start. If it’s not something I do, I’ll say so." />
 </BaseLayout>

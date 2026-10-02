@@ -1,0 +1,95 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/sections/PageHero.astro';
+import WorkGrid from '../../components/sections/WorkGrid.astro';
+import ProcessSteps from '../../components/sections/ProcessSteps.astro';
+import Faq from '../../components/sections/Faq.astro';
+import ContactBlock from '../../components/sections/ContactBlock.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { whatsappUrl } from '../../data/site';
+import { getServices, getProjects, fill, type Service } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return (await getServices()).map((service) => ({ params: { slug: service.id }, props: { service } }));
+}
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const { data } = service;
+const { Content } = await render(service);
+const related = (await getProjects()).filter((p) => p.data.service.id === service.id);
+---
+
+<BaseLayout title={data.metaTitle} description={data.metaDescription} whatsappText={data.whatsappText}>
+  <PageHero title={data.headline} lead={data.lead} crumbs={[{ label: 'Services', href: '/services/' }]}>
+    <div class="cluster">
+      <a class="btn btn-primary btn-lg" href="#contact">{data.cta}</a>
+      <a class="btn btn-outline btn-lg" href={whatsappUrl(data.whatsappText)} target="_blank" rel="noopener noreferrer">
+        <Icon name="whatsapp" /> Message on WhatsApp
+      </a>
+    </div>
+    <p class="service-audience"><strong>Who it’s for:</strong> {data.audience}</p>
+  </PageHero>
+
+  <section class="service-body">
+    <div class="container">
+      <div class="prose"><Content /></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <div class="section-head">
+        <h2>What you get</h2>
+        <p>Written into your quote, so you know exactly what you’re paying for.</p>
+      </div>
+      <ul class="deliverables">
+        {data.deliverables.map((d) => <li>{fill(d)}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <ProcessSteps class="section-alt" />
+
+  {related.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head section-head-split">
+          <h2>Related work</h2>
+          <p>Concept and self-initiated pieces for now, each labelled for what it is.</p>
+        </div>
+        <WorkGrid projects={related} />
+      </div>
+    </section>
+  )}
+
+  {data.faq.length > 0 && <Faq items={data.faq} class="section-alt" />}
+
+  <ContactBlock title={data.cta} service={service.id} whatsappText={data.whatsappText} />
+</BaseLayout>
+
+<style>
+  @layer sections {
+    .service-body { padding-bottom: var(--section-y-sm); }
+    .service-audience { margin-top: var(--space-8); max-width: var(--measure); font-size: var(--text-sm); }
+    .service-audience strong { color: var(--text); font-weight: var(--weight-semibold); }
+    .deliverables { display: grid; gap: 0; border-top: 1px solid var(--line-strong); }
+    .deliverables li {
+      padding: var(--space-4) 0 var(--space-4) var(--space-8);
+      border-bottom: 1px solid var(--line-strong);
+      color: var(--text);
+      position: relative;
+    }
+    /* A short marigold tick: these are confirmed inclusions */
+    .deliverables li::before {
+      content: ""; position: absolute; left: 2px; top: calc(var(--space-4) + .45em);
+      width: .75rem; height: .4rem;
+      border-left: 2px solid var(--accent-text); border-bottom: 2px solid var(--accent-text);
+      transform: rotate(-45deg);
+    }
+  }
+</style>

@@ -1,13 +1,18 @@
 ---
 import { getServices } from '../../lib/content';
 
+interface Props {
+  headingLevel?: 2 | 3;
+}
+const { headingLevel = 3 } = Astro.props;
+const Heading = headingLevel === 2 ? 'h2' : 'h3';
 const services = await getServices();
 ---
 
 <ul class="service-rows">
   {services.map((s) => (
     <li class="service-row">
-      <h3 class="service-row-title"><a class="card-link" href={`/services/${s.id}/`}>{s.data.title}</a></h3>
+      <Heading class="service-row-title"><a class="card-link" href={`/services/${s.id}/`}>{s.data.title}</a></Heading>
       <div class="service-row-copy">
         <p class="service-row-outcome">{s.data.outcome}</p>
         <p class="t-small">{s.data.audience}</p>
