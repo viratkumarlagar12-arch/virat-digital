@@ -48,6 +48,27 @@ test('the business website card shows the whole concept image, still Concept, un
   await expect(page.locator('[data-project="youtube-banner-concept"] img')).toHaveCSS('object-fit', 'cover');
 });
 
+test('the AI automation card shows the whole concept image, still Concept, unlinked and 16:10', async ({ page }) => {
+  await page.goto('/work/');
+  const card = page.locator('[data-project="ai-automation-workflow"]');
+  await expect(card.locator('.badge')).toHaveText('Concept');
+  await expect(card.locator('.card-body > p').first()).toHaveText('AI automation');
+  await expect(card.locator('.card-title')).toHaveText('AI automation workflow');
+  await expect(card.locator('.card-body > p').nth(1)).toHaveText('Automates repetitive content and data tasks with AI, with a person approving the output.');
+  await expect(card.locator('.card-foot')).toHaveText('Tools: n8n, OpenAI API');
+  await expect(card.locator('.media-word')).toHaveCount(0);
+  await expect(card.locator('picture source[type="image/avif"]')).toHaveCount(1);
+  const img = card.locator('img');
+  await expect(img).toHaveAttribute('alt', /^Concept design for a fictional AI automation service/);
+  await img.scrollIntoViewIfNeeded();
+  await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+  await expect(img).toHaveCSS('object-fit', 'contain');
+  const frame = (await card.locator('.media').boundingBox())!;
+  expect(frame.width / frame.height).toBeCloseTo(16 / 10, 1);
+  await expect(card.locator('a')).toHaveCount(0);
+  expect((await page.request.get('/work/ai-automation-workflow/')).status()).toBe(404);
+});
+
 test('the work page makes no unconfirmed claim about client projects', async ({ page }) => {
   await page.goto('/work/');
   await expect(page.locator('.page-hero .t-lead')).toHaveText('Concept and self-initiated pieces, labelled and shown at their real size and shape.');
