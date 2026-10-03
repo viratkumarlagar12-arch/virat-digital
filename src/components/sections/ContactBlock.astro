@@ -76,7 +76,7 @@ const channels: { icon: IconName; label: string; value: string; href: string; ex
     .contact-channels-intro { margin-bottom: var(--space-6); max-width: 36ch; color: var(--text); }
 
     .contact-list { display: grid; gap: var(--space-4); align-content: start; }
-    .contact-list li { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
+    .contact-list li { position: relative; display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
     .contact-list li > div { min-width: 0; }
     .contact-icon {
       display: grid; place-items: center; flex: none;
@@ -96,5 +96,7 @@ const channels: { icon: IconName; label: string; value: string; href: string; ex
       text-decoration-color: var(--line-strong);
     }
     .contact-value:hover { text-decoration-color: var(--link-underline); }
+    /* The whole row, icon included, is the link's tap target (same look). */
+    .contact-value::after { content: ""; position: absolute; inset: 0; }
   }
 </style>

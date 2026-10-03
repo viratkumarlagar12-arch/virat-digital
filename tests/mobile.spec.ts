@@ -73,6 +73,26 @@ test('on phones the founder portrait sits between the heading and the statement,
   expect(statement.y).toBeGreaterThan(portrait.y + portrait.height);
 });
 
+test.describe('contact rows on touch phones (390px)', () => {
+  test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+
+  for (const path of ['/', '/contact/']) {
+    test(`${path}: every contact row is one tap target, icon included, 44px or taller`, async ({ page }) => {
+      await page.goto(path);
+      const rows = page.locator('[data-contact] .contact-list li');
+      await expect(rows).toHaveCount(5);
+      for (const row of await rows.all()) {
+        await row.scrollIntoViewIfNeeded();
+        const href = await row.locator('a').getAttribute('href');
+        const icon = (await row.locator('.contact-icon').boundingBox())!;
+        const tapped = await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest('a')?.getAttribute('href') ?? null, [icon.x + icon.width / 2, icon.y + icon.height / 2]);
+        expect(tapped).toBe(href);
+        expect((await row.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      }
+    });
+  }
+});
+
 test('at 320px the WhatsApp button label fits on one line', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto('/');
