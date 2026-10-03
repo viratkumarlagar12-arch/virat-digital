@@ -15,12 +15,13 @@ interface Props {
   framed?: boolean;
   class?: string;
   transitionName?: string;  // pairs this frame with the same image on another page
+  fit?: 'cover' | 'contain'; // contain: show the whole image inside the frame
 }
 
-const { format, image, alt = '', word, badge, sizes = '(min-width: 64em) 40vw, (min-width: 48em) 50vw, 100vw', priority = false, framed = false, class: className, transitionName } = Astro.props;
+const { format, image, alt = '', word, badge, sizes = '(min-width: 64em) 40vw, (min-width: 48em) 50vw, 100vw', priority = false, framed = false, class: className, transitionName, fit = 'cover' } = Astro.props;
 ---
 
-<div class:list={['media', { 'media-framed': framed }, className]} data-format={format} style={transitionName ? `view-transition-name: ${transitionName}` : undefined}>
+<div class:list={['media', { 'media-framed': framed }, className]} data-format={format} data-fit={fit === 'contain' ? 'contain' : undefined} style={transitionName ? `view-transition-name: ${transitionName}` : undefined}>
   {badge && <span class="badge">{badge}</span>}
   {
     image ? (

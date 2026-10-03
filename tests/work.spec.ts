@@ -27,6 +27,27 @@ test('the banner card shows the real banner, still labelled Concept, unlinked an
   expect((await page.request.get('/work/youtube-banner-concept/')).status()).toBe(404);
 });
 
+test('the business website card shows the whole concept image, still Concept, unlinked and 16:10', async ({ page }) => {
+  await page.goto('/work/');
+  const card = page.locator('[data-project="business-website-concept"]');
+  await expect(card.locator('.badge')).toHaveText('Concept');
+  await expect(card.locator('.card-title')).toHaveText('Business website concept');
+  await expect(card.locator('.card-body > p').nth(1)).toHaveText('Built for clarity, speed on a phone and enquiries.');
+  await expect(card.locator('.media-word')).toHaveCount(0);
+  await expect(card.locator('picture source[type="image/avif"]')).toHaveCount(1);
+  const img = card.locator('img');
+  await expect(img).toHaveAttribute('alt', /^Concept homepage design for a fictional gym/);
+  await img.scrollIntoViewIfNeeded();
+  await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+  await expect(img).toHaveCSS('object-fit', 'contain');
+  const frame = (await card.locator('.media').boundingBox())!;
+  expect(frame.width / frame.height).toBeCloseTo(16 / 10, 1);
+  await expect(card.locator('a')).toHaveCount(0);
+  expect((await page.request.get('/work/business-website-concept/')).status()).toBe(404);
+  // other cards still fill their frames
+  await expect(page.locator('[data-project="youtube-banner-concept"] img')).toHaveCSS('object-fit', 'cover');
+});
+
 test('the work page makes no unconfirmed claim about client projects', async ({ page }) => {
   await page.goto('/work/');
   await expect(page.locator('.page-hero .t-lead')).toHaveText('Concept and self-initiated pieces, labelled and shown at their real size and shape.');

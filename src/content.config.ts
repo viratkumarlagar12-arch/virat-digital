@@ -41,6 +41,8 @@ const work = defineCollection({
         format: z.enum(['thumbnail', 'banner', 'site', 'square', 'og']),
         cover: image().optional(),
         coverAlt: z.string().optional(),
+        // 'contain' shows the whole image when its ratio differs from the frame's
+        coverFit: z.enum(['cover', 'contain']).default('cover'),
         word: z.string(),            // typographic placeholder until a cover exists
         gallery: z.array(z.object({ src: image(), alt: z.string(), caption: z.string().optional() })).default([]),
         featured: z.boolean().default(false),
