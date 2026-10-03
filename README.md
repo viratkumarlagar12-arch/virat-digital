@@ -40,7 +40,8 @@ once shows up everywhere.
 2. In the project's file in `src/content/work/`, add `cover:` with the image path and
    `coverAlt:` describing what the design shows.
 3. Write the case study below the frontmatter (brief, constraints, approach). A project gets its
-   own page as soon as it has a cover image or written text.
+   own page, and its card becomes a link, once it has written text; with only a cover image,
+   the card shows the image and stays unlinked.
 4. Set `status:` honestly: `concept`, `self-initiated` or `client`. A `result:` line is only
    accepted for `client` work; the build refuses it otherwise.
 

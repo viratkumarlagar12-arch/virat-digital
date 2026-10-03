@@ -10,6 +10,23 @@ test('work index shows every project with an honest label', async ({ page }) => 
   }
 });
 
+test('the banner card shows the real banner, still labelled Concept, unlinked and banner-shaped', async ({ page }) => {
+  await page.goto('/work/');
+  const card = page.locator('[data-project="youtube-banner-concept"]');
+  await expect(card.locator('.badge')).toHaveText('Concept');
+  await expect(card.locator('.card-title')).toHaveText('YouTube banner concept');
+  await expect(card.locator('.media-word')).toHaveCount(0);
+  await expect(card.locator('picture source[type="image/avif"]')).toHaveCount(1);
+  const img = card.locator('img');
+  await expect(img).toHaveAttribute('alt', /YouTube channel banner for Virat Marketing/);
+  await img.scrollIntoViewIfNeeded();
+  await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+  const frame = (await card.locator('.media').boundingBox())!;
+  expect(frame.width / frame.height).toBeCloseTo(1546 / 423, 1);
+  await expect(card.locator('a')).toHaveCount(0);
+  expect((await page.request.get('/work/youtube-banner-concept/')).status()).toBe(404);
+});
+
 test('the work page makes no unconfirmed claim about client projects', async ({ page }) => {
   await page.goto('/work/');
   await expect(page.locator('.page-hero .t-lead')).toHaveText('Concept and self-initiated pieces, labelled and shown at their real size and shape.');

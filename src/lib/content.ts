@@ -12,9 +12,10 @@ export async function getProjects(): Promise<Project[]> {
   return (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 }
 
-/** A project gets its own page only when there's something to show on it. */
+/** A project gets its own page only when it has a write-up; a cover image
+ *  alone shows on its card, which stays unlinked. */
 export function hasPage(project: Project): boolean {
-  return Boolean(project.data.cover) || Boolean(project.body?.trim());
+  return Boolean(project.body?.trim());
 }
 
 export const statusLabel: Record<Project['data']['status'], string> = {
