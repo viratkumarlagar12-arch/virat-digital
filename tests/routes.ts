@@ -15,6 +15,7 @@ export const ROUTES = [
   '/work/',
   '/work/virat-digital-website/',
   '/work/virat-digital-brand-identity/',
+  '/work/youtube-thumbnail-system/',
   '/about/',
   '/contact/',
   '/privacy/',

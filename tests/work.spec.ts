@@ -13,10 +13,11 @@ test('work index shows every project with an honest label', async ({ page }) => 
 test('only projects with something to show link to their own page', async ({ page }) => {
   await page.goto('/work/');
   const links = page.locator('main .work-card a.card-link');
-  await expect(links).toHaveCount(2);
+  await expect(links).toHaveCount(3);
   expect(await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')).sort())).toEqual([
     '/work/virat-digital-brand-identity/',
     '/work/virat-digital-website/',
+    '/work/youtube-thumbnail-system/',
   ]);
 });
 

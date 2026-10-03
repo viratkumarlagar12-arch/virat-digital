@@ -106,6 +106,18 @@ test('selected work shows featured projects with honest labels', async ({ page }
   await expect(section.getByRole('link', { name: 'See all work' })).toHaveAttribute('href', '/work/');
 });
 
+test('the thumbnail project shows the real thumbnail work, labelled self-initiated', async ({ page }) => {
+  await page.goto('/');
+  const card = page.locator('[data-project="youtube-thumbnail-system"]');
+  await expect(card.locator('.badge')).toHaveText('Self-initiated');
+  await expect(card.locator('.media-word')).toHaveCount(0);
+  await expect(card.locator('picture source[type="image/avif"]')).toHaveCount(1);
+  const img = card.locator('img');
+  await expect(img).toHaveAttribute('alt', /thumbnail/i);
+  await img.scrollIntoViewIfNeeded();
+  await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+});
+
 test('services section links to each service page', async ({ page }) => {
   await page.goto('/');
   const section = page.locator('section', { has: page.getByRole('heading', { name: 'Services', level: 2 }) });
