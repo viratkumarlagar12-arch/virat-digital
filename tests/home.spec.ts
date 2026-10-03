@@ -106,6 +106,18 @@ test('selected work shows featured projects with honest labels', async ({ page }
   await expect(section.getByRole('link', { name: 'See all work' })).toHaveAttribute('href', '/work/');
 });
 
+test("who you'll work with shows the founder's real portrait, 240px wide at 4:5", async ({ page }) => {
+  await page.goto('/');
+  const section = page.locator('section', { has: page.getByRole('heading', { name: /Who you.ll work with/ }) });
+  const img = section.locator('.about-portrait img');
+  await expect(img).toHaveAttribute('alt', 'Virat Kumar, founder of Virat Digital');
+  await expect(section.locator('.about-portrait source[type="image/avif"]')).toHaveCount(1);
+  await img.scrollIntoViewIfNeeded();
+  await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+  const box = (await section.locator('.about-portrait').boundingBox())!;
+  expect([Math.round(box.width), Math.round(box.height)]).toEqual([240, 300]);
+});
+
 test('the thumbnail project shows the real thumbnail work, labelled self-initiated', async ({ page }) => {
   await page.goto('/');
   const card = page.locator('[data-project="youtube-thumbnail-system"]');

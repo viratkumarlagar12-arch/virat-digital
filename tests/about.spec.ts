@@ -10,6 +10,10 @@ test('explains the one-person studio without placeholders', async ({ page }) => 
   await expect(page.locator('main')).not.toContainText('{');
 });
 
+test('names the founder in the intro', async ({ page }) => {
+  await expect(page.locator('.page-hero .t-lead')).toContainText(/I.m Virat Kumar\./);
+});
+
 test('lists the tools named in the projects, grouped by service', async ({ page }) => {
   const tools = page.locator('section', { has: page.getByRole('heading', { name: 'Tools I use' }) });
   await expect(tools.getByRole('heading', { name: 'YouTube design' })).toBeVisible();

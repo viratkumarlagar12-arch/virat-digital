@@ -6,9 +6,9 @@ export const site = {
   name: 'Virat Digital',
   description:
     'Logo and brand design, YouTube thumbnails, websites, AI automation and digital marketing for creators and small businesses, from an independent studio in India.',
-  // How the founder is named on the site. Left empty until you decide; the
-  // About page reads naturally without it.
-  founderName: '',
+  // How the founder is named on the site: the About page intro and the
+  // portrait's alt text. Empty hides the name.
+  founderName: 'Virat Kumar',
   email: 'viratkumardigital12@gmail.com',
   whatsapp: { number: '918210618353', display: '+91 82106 18353' },
   socials: [

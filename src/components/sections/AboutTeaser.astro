@@ -1,13 +1,28 @@
 ---
+import { Picture } from 'astro:assets';
 import { site } from '../../data/site';
+import portrait from '../../assets/about/virat-kumar-portrait.png';
 
 const youtube = site.socials.find((s) => s.name === 'YouTube')!;
+const portraitAlt = site.founderName ? `${site.founderName}, founder of Virat Digital` : 'Portrait of the founder of Virat Digital';
 ---
 
 <section class="section section-alt">
   <div class="container split">
     <div class="section-head">
       <h2>Who you’ll work with</h2>
+      <!-- A real photo, cropped only. Under the heading on laptops; between
+           the heading and the statement when the section stacks. -->
+      <figure class="about-portrait media media-framed">
+        <Picture
+          src={portrait}
+          alt={portraitAlt}
+          formats={['avif', 'webp']}
+          widths={[160, 240, 320, 480, 640]}
+          sizes="(min-width: 64em) 15rem, 10rem"
+          loading="lazy"
+        />
+      </figure>
     </div>
     <div class="about-teaser">
       <p class="about-statement">
@@ -35,5 +50,9 @@ const youtube = site.socials.find((s) => s.name === 'YouTube')!;
       max-width: 32ch;
     }
     .about-teaser .cluster { --cluster-gap: var(--space-3) var(--space-8); margin-top: var(--space-2); }
+
+    .about-portrait { --media-ratio: 4 / 5; width: 10rem; margin: var(--space-2) 0 0; }
+    .about-portrait :global(img) { display: block; }
+    @media (min-width: 64em) { .about-portrait { width: 15rem; margin-top: var(--space-6); } }
   }
 </style>

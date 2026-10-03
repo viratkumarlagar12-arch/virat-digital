@@ -61,6 +61,18 @@ test('on desktop, service titles stay plain until hovered', async ({ page }) => 
   await expect(page.locator('.service-row-title a').first()).toHaveCSS('text-decoration-color', 'rgba(0, 0, 0, 0)');
 });
 
+test('on phones the founder portrait sits between the heading and the statement, 160px wide', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const section = page.locator('section', { has: page.getByRole('heading', { name: /Who you.ll work with/ }) });
+  const heading = (await section.getByRole('heading').boundingBox())!;
+  const portrait = (await section.locator('.about-portrait').boundingBox())!;
+  const statement = (await section.locator('.about-statement').boundingBox())!;
+  expect(Math.round(portrait.width)).toBe(160);
+  expect(portrait.y).toBeGreaterThan(heading.y + heading.height);
+  expect(statement.y).toBeGreaterThan(portrait.y + portrait.height);
+});
+
 test('at 320px the WhatsApp button label fits on one line', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto('/');
