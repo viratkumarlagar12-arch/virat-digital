@@ -10,6 +10,12 @@ test('work index shows every project with an honest label', async ({ page }) => 
   }
 });
 
+test('the work page makes no unconfirmed claim about client projects', async ({ page }) => {
+  await page.goto('/work/');
+  await expect(page.locator('.page-hero .t-lead')).toHaveText('Concept and self-initiated pieces, labelled and shown at their real size and shape.');
+  await expect(page.locator('main')).not.toContainText('under way');
+});
+
 test('only projects with something to show link to their own page', async ({ page }) => {
   await page.goto('/work/');
   const links = page.locator('main .work-card a.card-link');
