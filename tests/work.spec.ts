@@ -12,8 +12,12 @@ test('work index shows every project with an honest label', async ({ page }) => 
 
 test('only projects with something to show link to their own page', async ({ page }) => {
   await page.goto('/work/');
-  await expect(page.locator('main .work-card a.card-link')).toHaveCount(1);
-  await expect(page.locator('main .work-card a.card-link')).toHaveAttribute('href', '/work/virat-digital-website/');
+  const links = page.locator('main .work-card a.card-link');
+  await expect(links).toHaveCount(2);
+  expect(await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')).sort())).toEqual([
+    '/work/virat-digital-brand-identity/',
+    '/work/virat-digital-website/',
+  ]);
 });
 
 test.describe('service filter', () => {
