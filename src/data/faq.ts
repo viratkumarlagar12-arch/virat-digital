@@ -7,7 +7,7 @@ export const faq = [
   },
   {
     q: 'How long does a project take?',
-    a: 'Days for thumbnails or social posts, weeks for a brand identity or website. Your quote sets the timeline.',
+    a: 'It depends on the scope. Your quote sets the timeline, agreed before anything starts.',
   },
   {
     q: 'How many revisions are included?',

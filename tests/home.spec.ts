@@ -160,6 +160,13 @@ test('FAQ answers open and close', async ({ page }) => {
   await expect(first.locator('.faq-answer')).toBeVisible();
 });
 
+test('the FAQ makes no duration claims: the quote sets the timeline', async ({ page }) => {
+  await page.goto('/');
+  const answer = page.locator('.faq details', { hasText: 'How long does a project take?' }).locator('.faq-answer');
+  await expect(answer).toHaveText('It depends on the scope. Your quote sets the timeline, agreed before anything starts.', { useInnerText: false });
+  await expect(page.locator('.faq')).not.toContainText(/\b(days?|weeks?|months?)\b/i);
+});
+
 test('page ends with the contact form', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('[data-contact] form[name="contact"]')).toHaveCount(1);
