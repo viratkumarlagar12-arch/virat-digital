@@ -40,12 +40,15 @@ const services = await getServices();
     }
     .service-row-title a { color: var(--text); text-decoration-color: transparent; text-underline-offset: .2em; }
     .service-row:hover .service-row-title a { text-decoration-color: var(--link-underline); }
+    /* Touch screens can't hover, so the titles show they're links up front. */
+    @media (hover: none) { .service-row-title a { text-decoration-color: var(--link-underline); } }
     .service-row-outcome { color: var(--text); font-size: var(--text-md); line-height: 1.5; }
     .service-row-copy .t-small { margin-top: var(--space-2); color: var(--text-subtle); }
-    .service-row-includes { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); font-size: var(--text-sm); }
+    /* Two to a row below desktop, one column on desktop: always a list, never run-on text. */
+    .service-row-includes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-1) var(--space-4); font-size: var(--text-sm); }
     @media (min-width: 64em) {
       .service-row { grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr); align-items: start; }
-      .service-row-includes { display: grid; gap: var(--space-1); }
+      .service-row-includes { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
     }
   }
 </style>

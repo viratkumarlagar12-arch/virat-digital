@@ -35,6 +35,32 @@ test.describe('phones (390px)', () => {
   });
 });
 
+test.describe('services on touch phones (390px)', () => {
+  test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const firstRow = (page: import('@playwright/test').Page) =>
+    page.locator('section', { has: page.getByRole('heading', { name: 'Services', level: 2 }) }).locator('.service-row').first();
+
+  test("what's included reads as a list, two to a row", async ({ page }) => {
+    await page.goto('/');
+    const lefts = await firstRow(page).locator('.service-row-includes li').evaluateAll((items) =>
+      items.map((li) => Math.round(li.getBoundingClientRect().left)),
+    );
+    expect(lefts).toHaveLength(5);
+    expect(new Set(lefts).size).toBe(2);
+  });
+
+  test('service titles are underlined, so they read as links', async ({ page }) => {
+    await page.goto('/');
+    await expect(firstRow(page).locator('.service-row-title a')).not.toHaveCSS('text-decoration-color', 'rgba(0, 0, 0, 0)');
+  });
+});
+
+test('on desktop, service titles stay plain until hovered', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await expect(page.locator('.service-row-title a').first()).toHaveCSS('text-decoration-color', 'rgba(0, 0, 0, 0)');
+});
+
 test('at 320px the WhatsApp button label fits on one line', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto('/');
