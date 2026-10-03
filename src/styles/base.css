@@ -101,7 +101,8 @@
   .prose > * + * { margin-block-start: var(--space-5); }
   .prose > :is(h2, h3):not(:first-child) { margin-block-start: var(--space-12); }
   .prose > :is(h2, h3) + * { margin-block-start: var(--space-4); }
-  .prose h2 { font-size: var(--text-2xl); }
+  .prose h2 { font-size: var(--text-3xl); }  /* the h2 scale on phones */
+  @media (min-width: 48em) { .prose h2 { font-size: var(--text-2xl); } }
   .prose ul { display: grid; gap: var(--space-2); padding-left: 1.25em; list-style: disc; }
   .prose li::marker { color: var(--accent-text); }
   .prose strong { color: var(--text); font-weight: var(--weight-semibold); }

@@ -35,9 +35,11 @@ const services = await getServices();
     }
     .service-row:has(.card-link:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 4px; }
     .service-row-title {
-      font-size: var(--text-2xl); font-weight: var(--weight-bold); font-stretch: var(--heading-wdth);
+      font-size: var(--text-xl); font-weight: var(--weight-bold); font-stretch: var(--heading-wdth);
       letter-spacing: var(--tracking-heading); line-height: 1.1;
     }
+    /* Below the section's h2 on phones; the larger size from tablets up */
+    @media (min-width: 48em) { .service-row-title { font-size: var(--text-2xl); } }
     .service-row-title a { color: var(--text); text-decoration-color: transparent; text-underline-offset: .2em; }
     .service-row:hover .service-row-title a { text-decoration-color: var(--link-underline); }
     /* Touch screens can't hover, so the titles show they're links up front. */

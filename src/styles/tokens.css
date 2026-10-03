@@ -125,12 +125,14 @@
     --text-lg:      1.3125rem;                                /* 21  card titles */
     --text-xl:      1.5rem;                                   /* 24  h3 */
     --text-2xl:     clamp(1.75rem, 1.4rem + 1.5vw, 2.25rem);  /* 28-36   mobile menu, sub-heads */
-    --text-3xl:     clamp(2.125rem, 1.4rem + 3vw, 3.75rem);   /* 34-60   h2 */
-    --text-4xl:     clamp(2.5rem, 1.2rem + 5.4vw, 6rem);      /* 40-96   h1 */
+    /* h1 and h2 are smaller on phones and meet the 48em values exactly
+       at 768px, so tablets and desktops keep the sizes below. */
+    --text-3xl:     calc(0.759rem + 4.33vw);                  /* 26-29 on phones, h2 */
+    --text-4xl:     calc(0.72rem + 6.41vw);                   /* 32-37 on phones, h1 */
     --text-display: clamp(3rem, 1.1rem + 7.8vw, 7.5rem);      /* 48-120  one short statement per page */
 
-    --leading-display: 0.92;
-    --leading-heading: 1.02;
+    --leading-display: 1;      /* 0.92 from 48em */
+    --leading-heading: 1.1;    /* 1.02 from 48em */
     --leading-title:   1.22;
     --leading-body:    1.6;
     --leading-ui:      1.2;
@@ -272,6 +274,13 @@
   /* ---- Headlines widen with the viewport ---- */
   @media (min-width: 48em) {
     :root { --display-wdth: var(--wdth-wide); --heading-wdth: var(--wdth-wide); }
+    /* Tablet and desktop heading scale (phones get a smaller one, above) */
+    :root {
+      --text-3xl: clamp(2.125rem, 1.4rem + 3vw, 3.75rem);     /* 34-60   h2 */
+      --text-4xl: clamp(2.5rem, 1.2rem + 5.4vw, 6rem);        /* 40-96   h1 */
+      --leading-display: 0.92;
+      --leading-heading: 1.02;
+    }
   }
   @media (min-width: 64em) {
     :root { --display-wdth: var(--wdth-expanded); }
