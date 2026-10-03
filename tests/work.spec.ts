@@ -69,6 +69,27 @@ test('the AI automation card shows the whole concept image, still Concept, unlin
   expect((await page.request.get('/work/ai-automation-workflow/')).status()).toBe(404);
 });
 
+test('the campaign landing page card shows the whole concept image, still Concept, unlinked and 16:10', async ({ page }) => {
+  await page.goto('/work/');
+  const card = page.locator('[data-project="marketing-landing-page"]');
+  await expect(card.locator('.badge')).toHaveText('Concept');
+  await expect(card.locator('.card-body > p').first()).toHaveText('Digital marketing');
+  await expect(card.locator('.card-title')).toHaveText('Campaign landing page');
+  await expect(card.locator('.card-body > p').nth(1)).toHaveText('A landing page built around one focused campaign.');
+  await expect(card.locator('.card-foot')).toHaveText('Tools: HTML, CSS, SEO');
+  await expect(card.locator('.media-word')).toHaveCount(0);
+  await expect(card.locator('picture source[type="image/avif"]')).toHaveCount(1);
+  const img = card.locator('img');
+  await expect(img).toHaveAttribute('alt', /^Concept design for a fictional digital marketing service/);
+  await img.scrollIntoViewIfNeeded();
+  await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+  await expect(img).toHaveCSS('object-fit', 'contain');
+  const frame = (await card.locator('.media').boundingBox())!;
+  expect(frame.width / frame.height).toBeCloseTo(16 / 10, 1);
+  await expect(card.locator('a')).toHaveCount(0);
+  expect((await page.request.get('/work/marketing-landing-page/')).status()).toBe(404);
+});
+
 test('the work page makes no unconfirmed claim about client projects', async ({ page }) => {
   await page.goto('/work/');
   await expect(page.locator('.page-hero .t-lead')).toHaveText('Concept and self-initiated pieces, labelled and shown at their real size and shape.');
