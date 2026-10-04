@@ -11,15 +11,15 @@ const services = await getServices();
 
 <!-- Netlify Forms reads this static form at deploy time. With JavaScript the
      form posts in the background and shows the result here; without it, the
-     browser posts normally and lands on /thanks/. -->
+     browser checks the required fields itself, posts normally and lands on
+     /thanks/. -->
 <form
   class="contact-form"
   name="contact"
   method="POST"
   action="/thanks/"
   data-netlify="true"
-  netlify-honeypot="bot-field"
-  novalidate
+  data-netlify-honeypot="bot-field"
   data-reply-hours={commitments.replyHours}
   data-whatsapp={site.whatsapp.number}
 >
@@ -34,11 +34,11 @@ const services = await getServices();
 
   <fieldset class="field field-group" aria-describedby="cf-reply-help cf-reply-error">
     <legend class="field-legend">How should I reply?</legend>
-    <p class="field-help" id="cf-reply-help">Email or WhatsApp. One is enough.</p>
+    <p class="field-help" id="cf-reply-help">Email is required. WhatsApp is optional.</p>
     <div class="field-row">
       <div class="field">
         <label for="cf-email">Email</label>
-        <input type="email" id="cf-email" name="email" autocomplete="email" inputmode="email" aria-describedby="cf-reply-error" />
+        <input type="email" id="cf-email" name="email" required autocomplete="email" inputmode="email" aria-describedby="cf-reply-error" />
       </div>
       <div class="field">
         <label for="cf-whatsapp">WhatsApp</label>
@@ -106,6 +106,8 @@ const services = await getServices();
     const el = (name: string) => form.elements.namedItem(name) as HTMLInputElement;
     const replyHours = form.dataset.replyHours;
     const whatsappNumber = form.dataset.whatsapp;
+    // The script shows its own messages; without it the browser's checks apply.
+    form.noValidate = true;
 
     // /contact/?service=websites preselects that service.
     const fromUrl = new URLSearchParams(location.search).get('service');
@@ -130,18 +132,16 @@ const services = await getServices();
       const message = el('message');
       const emailValue = email.value.trim();
       const whatsappDigits = whatsapp.value.replace(/\D/g, '').length;
-      const hasWhatsapp = whatsappDigits >= 7;
 
       let ok = setError([name], 'cf-name-error', name.value.trim() ? '' : 'Please enter your name.');
       let replyError = '';
-      let replyInputs = [email, whatsapp];
-      if (!emailValue && whatsappDigits > 0 && !hasWhatsapp) {
+      let replyInputs = [email];
+      if (!emailValue) replyError = 'Please enter your email address.';
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailValue)) replyError = 'That email address looks incomplete.';
+      else if (whatsappDigits > 0 && whatsappDigits < 7) {
+        // WhatsApp is optional, but a number that's there has to be usable.
         replyError = 'That WhatsApp number looks too short.';
         replyInputs = [whatsapp];
-      } else if (!emailValue && !hasWhatsapp) replyError = 'Add an email address or a WhatsApp number so I can reply.';
-      else if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailValue)) {
-        replyError = 'That email address looks incomplete.';
-        replyInputs = [email];
       }
       setError([email, whatsapp], 'cf-reply-error', '');
       if (replyError) ok = setError(replyInputs, 'cf-reply-error', replyError) && ok;
